@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiSmart — Defensa TPO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        /* === THEME VARIABLES === */
+        :root {
+            --stage-bg: #030806;
+            --slide-bg: #06100d;
+            --ink: #f1f7ea;
+            --muted: #a8b8ad;
+            --soft: #d5dfd2;
+            --line: rgba(196, 255, 190, 0.17);
+            --panel: rgba(13, 28, 22, 0.82);
+            --panel-strong: rgba(20, 42, 33, 0.92);
+            --accent: #bef264;
+            --accent-2: #f59e0b;
+            --accent-3: #22d3ee;
+            --danger: #fb7185;
+            --font-display: "Instrument Serif", serif;
+            --font-body: "IBM Plex Sans", sans-serif;
+            --font-mono: "IBM Plex Mono", monospace;
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.72s;
+        }
+
+        /* === RESET === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ===========================================
+           FIXED 16:9 STAGE: MANDATORY BASE STYLES
+           Include this ENTIRE file in every presentation.
+           Slides are authored at 1920×1080 and scaled as a whole.
+           =========================================== */
+
+        /* 1. Lock the browser viewport */
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: var(--stage-bg, #000);
+        }
+
+        /* 2. Full-window deck viewport */
+        .deck-viewport {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            background: var(--stage-bg, #000);
+        }
+
+        /* 3. Fixed 16:9 design canvas.
+           JavaScript sets transform: translate(...) scale(...). */
+        .deck-stage {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            transform-origin: 0 0;
+            background: var(--slide-bg, #fff);
+        }
+
+        /* 4. Slides stack inside the fixed stage.
+           Content must be laid out at 1920×1080, not reflowed per device. */
+        .slide {
+            position: absolute;
+            inset: 0;
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            display: block;
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            background: var(--slide-bg, #fff);
+        }
+
+        .slide.active,
+        .slide.visible {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 1;
+        }
+
+        /* 5. Keep media inside authored slide bounds */
+        img,
+        video,
+        canvas,
+        svg {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* 6. Presentation chrome stays outside the slide design system */
+        .deck-controls {
+            position: fixed;
+            left: 50%;
+            bottom: 22px;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+
+        /* 7. Print one fixed-size slide per page */
+        @media print {
+            html,
+            body {
+                width: 1920px;
+                height: auto;
+                overflow: visible;
+                background: #fff;
+            }
+
+            .deck-viewport {
+                position: static;
+                overflow: visible;
+                background: #fff;
+            }
+
+            .deck-stage {
+                position: static;
+                width: auto;
+                height: auto;
+                transform: none !important;
+                background: none;
+            }
+
+            .slide {
+                position: relative;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                pointer-events: auto !important;
+                width: 1920px;
+                height: 1080px;
+                break-after: page;
+                page-break-after: always;
+            }
+
+            .slide:last-child {
+                break-after: auto;
+                page-break-after: auto;
+            }
+
+            .deck-controls {
+                display: none !important;
+            }
+        }
+
+        /* 8. Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+        }
+
+        /* === GLOBAL SLIDE ATMOSPHERE === */
+        body {
+            color: var(--ink);
+            font-family: var(--font-body);
+        }
+
+        .slide::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 12% 18%, rgba(190, 242, 100, 0.16), transparent 34%),
+                radial-gradient(circle at 82% 12%, rgba(34, 211, 238, 0.12), transparent 28%),
+                radial-gradient(circle at 76% 88%, rgba(245, 158, 11, 0.11), transparent 30%),
+                linear-gradient(135deg, #030806 0%, #071611 48%, #0a1513 100%);
+            z-index: 0;
+        }
+
+        .slide::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+            background-size: 64px 64px;
+            mask-image: radial-gradient(circle at 50% 50%, black, transparent 72%);
+            z-index: 0;
+        }
+
+        .slide-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            padding: 78px 92px;
+        }
+
+        .eyebrow {
+            color: var(--accent);
+            font-family: var(--font-mono);
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            max-width: 1260px;
+            color: var(--ink);
+            font-family: var(--font-display);
+            font-size: 138px;
+            font-weight: 400;
+            letter-spacing: -0.045em;
+            line-height: 0.92;
+        }
+
+        h2 {
+            max-width: 1240px;
+            color: var(--ink);
+            font-family: var(--font-display);
+            font-size: 96px;
+            font-weight: 400;
+            letter-spacing: -0.034em;
+            line-height: 0.96;
+        }
+
+        h3 {
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: 34px;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        p, li {
+            color: var(--soft);
+            font-size: 28px;
+            line-height: 1.28;
+        }
+
+        strong {
+            color: var(--ink);
+        }
+
+        code {
+            color: var(--accent);
+            font-family: var(--font-mono);
+        }
+
+        /* === ANIMATIONS === */
+        .reveal,
+        .reveal-left,
+        .reveal-scale,
+        .reveal-blur {
+            opacity: 0;
+            transition:
+                opacity var(--duration-normal) var(--ease-out-expo),
+                transform var(--duration-normal) var(--ease-out-expo),
+                filter var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .reveal { transform: translateY(34px); }
+        .reveal-left { transform: translateX(-46px); }
+        .reveal-scale { transform: scale(0.94); }
+        .reveal-blur { filter: blur(12px); transform: translateY(18px); }
+
+        .slide.visible .reveal,
+        .slide.visible .reveal-left,
+        .slide.visible .reveal-scale,
+        .slide.visible .reveal-blur {
+            opacity: 1;
+            transform: translate(0, 0) scale(1);
+            filter: blur(0);
+        }
+
+        .d1 { transition-delay: 0.1s; }
+        .d2 { transition-delay: 0.2s; }
+        .d3 { transition-delay: 0.3s; }
+        .d4 { transition-delay: 0.4s; }
+        .d5 { transition-delay: 0.5s; }
+        .d6 { transition-delay: 0.6s; }
+
+        /* === REUSABLE LAYOUTS === */
+        .topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 44px;
+        }
+
+        .slide-number {
+            color: rgba(241, 247, 234, 0.58);
+            font-family: var(--font-mono);
+            font-size: 20px;
+            letter-spacing: 0.08em;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 0.92fr 1.08fr;
+            gap: 54px;
+            align-items: stretch;
+            height: 770px;
+            margin-top: 34px;
+        }
+
+        .grid-2,
+        .grid-3,
+        .grid-4 {
+            display: grid;
+            gap: 28px;
+        }
+
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+        .card {
+            position: relative;
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            background: linear-gradient(180deg, rgba(18, 40, 31, 0.86), rgba(8, 18, 15, 0.76));
+            box-shadow: 0 28px 70px rgba(0, 0, 0, 0.28);
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(135deg, rgba(190, 242, 100, 0.12), transparent 32%, rgba(34, 211, 238, 0.07));
+            pointer-events: none;
+        }
+
+        .card-inner {
+            position: relative;
+            z-index: 1;
+            padding: 32px;
+        }
+
+        .metric {
+            color: var(--accent);
+            font-family: var(--font-mono);
+            font-size: 72px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            min-height: 42px;
+            padding: 9px 15px;
+            border: 1px solid rgba(190, 242, 100, 0.28);
+            border-radius: 999px;
+            color: var(--accent);
+            background: rgba(190, 242, 100, 0.08);
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .statement {
+            max-width: 1520px;
+            margin-top: 90px;
+            font-family: var(--font-display);
+            font-size: 88px;
+            line-height: 1.02;
+            letter-spacing: -0.03em;
+        }
+
+        .quote {
+            border-left: 6px solid var(--accent);
+            padding-left: 34px;
+            color: var(--ink);
+            font-family: var(--font-display);
+            font-size: 68px;
+            font-style: italic;
+            letter-spacing: -0.02em;
+            line-height: 1.05;
+        }
+
+        .small-list {
+            display: grid;
+            gap: 18px;
+            margin-top: 28px;
+        }
+
+        .small-list li {
+            list-style: none;
+            padding-left: 34px;
+            position: relative;
+        }
+
+        .small-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent-2);
+            font-family: var(--font-mono);
+        }
+
+        .diagram-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border: 1px solid rgba(241, 247, 234, 0.18);
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.92);
+            padding: 24px;
+            box-shadow: 0 32px 90px rgba(0, 0, 0, 0.35);
+        }
+
+        /* === TITLE SLIDE === */
+        .title-lockup {
+            position: absolute;
+            left: 92px;
+            top: 126px;
+            z-index: 2;
+        }
+
+        .title-subtitle {
+            max-width: 900px;
+            margin-top: 34px;
+            color: var(--muted);
+            font-size: 34px;
+        }
+
+        .routing-map {
+            position: absolute;
+            right: 112px;
+            bottom: 96px;
+            width: 700px;
+            height: 560px;
+            z-index: 1;
+        }
+
+        .route-line {
+            position: absolute;
+            left: 60px;
+            top: 280px;
+            width: 560px;
+            height: 220px;
+            border-top: 6px solid rgba(190, 242, 100, 0.72);
+            border-right: 6px solid rgba(190, 242, 100, 0.72);
+            border-radius: 0 110px 0 0;
+            transform: rotate(-18deg);
+            filter: drop-shadow(0 0 24px rgba(190, 242, 100, 0.35));
+        }
+
+        .pin {
+            position: absolute;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 8px solid var(--accent);
+            background: #071611;
+            box-shadow: 0 0 34px rgba(190, 242, 100, 0.45);
+        }
+
+        .pin:nth-child(2) { left: 72px; top: 336px; }
+        .pin:nth-child(3) { left: 302px; top: 208px; border-color: var(--accent-2); }
+        .pin:nth-child(4) { left: 574px; top: 152px; border-color: var(--accent-3); }
+
+        .radar {
+            position: absolute;
+            right: 150px;
+            top: 130px;
+            width: 390px;
+            height: 390px;
+            border: 1px solid rgba(190, 242, 100, 0.22);
+            border-radius: 50%;
+            background:
+                repeating-radial-gradient(circle, rgba(190, 242, 100, 0.09) 0 1px, transparent 1px 62px),
+                conic-gradient(from 20deg, rgba(190, 242, 100, 0.28), transparent 28%, transparent);
+            animation: sweep 9s linear infinite;
+        }
+
+        @keyframes sweep {
+            to { transform: rotate(360deg); }
+        }
+
+        /* === TIMELINE AND PIPELINES === */
+        .pipeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+            margin-top: 72px;
+        }
+
+        .pipe-step {
+            min-height: 245px;
+        }
+
+        .pipe-step h3 {
+            margin-bottom: 16px;
+        }
+
+        .pipe-step p {
+            font-size: 24px;
+        }
+
+        .decision-flow {
+            display: grid;
+            grid-template-columns: 1fr 64px 1fr 64px 1fr 64px 1fr;
+            align-items: center;
+            margin-top: 76px;
+        }
+
+        .node {
+            min-height: 210px;
+            padding: 30px;
+        }
+
+        .arrow {
+            color: var(--accent-2);
+            font-family: var(--font-mono);
+            font-size: 46px;
+            text-align: center;
+        }
+
+        .node p {
+            margin-top: 14px;
+            font-size: 23px;
+        }
+
+        /* === TABLES AND MATRIX === */
+        .matrix {
+            display: grid;
+            grid-template-columns: 0.9fr 1.25fr 1.05fr;
+            gap: 1px;
+            margin-top: 42px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            background: var(--line);
+        }
+
+        .matrix > div {
+            min-height: 92px;
+            padding: 22px 26px;
+            background: rgba(8, 18, 15, 0.92);
+            font-size: 24px;
+            line-height: 1.22;
+        }
+
+        .matrix .head {
+            color: var(--accent);
+            background: rgba(20, 42, 33, 0.96);
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+        }
+
+        .matrix .pattern {
+            color: var(--ink);
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        /* === SPEAKER NOTES VISUALS === */
+        .tribunal-card {
+            display: grid;
+            grid-template-columns: 0.36fr 1fr;
+            gap: 26px;
+            align-items: start;
+            padding: 28px;
+        }
+
+        .question {
+            color: var(--accent-2);
+            font-family: var(--font-mono);
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .answer {
+            color: var(--soft);
+            font-size: 25px;
+        }
+
+        /* === CONTROLS AND EDITING === */
+        .deck-controls {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 14px;
+            border: 1px solid rgba(241, 247, 234, 0.14);
+            border-radius: 999px;
+            color: rgba(241, 247, 234, 0.78);
+            background: rgba(3, 8, 6, 0.76);
+            backdrop-filter: blur(16px);
+            font-family: var(--font-mono);
+            font-size: 13px;
+        }
+
+        .progress {
+            width: 180px;
+            height: 5px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            transition: width 0.25s ease;
+        }
+
+        .edit-hotzone {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 82px;
+            height: 82px;
+            z-index: 10000;
+            cursor: pointer;
+        }
+
+        .edit-toggle {
+            position: fixed;
+            top: 18px;
+            left: 18px;
+            z-index: 10001;
+            width: 46px;
+            height: 46px;
+            border: 1px solid rgba(190, 242, 100, 0.42);
+            border-radius: 50%;
+            color: var(--accent);
+            background: rgba(3, 8, 6, 0.88);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .edit-toggle.show,
+        .edit-toggle.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        [contenteditable="true"] {
+            outline: 2px dashed rgba(190, 242, 100, 0.55);
+            outline-offset: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="deck-viewport">
+        <main class="deck-stage" id="deckStage">
+            <section class="slide active">
+                <div class="title-lockup">
+                    <div class="eyebrow reveal-left">Defensa TPO · Proceso de Desarrollo de Software</div>
+                    <h1 class="reveal-blur d1">LogiSmart</h1>
+                    <p class="title-subtitle reveal d2">Plataforma SaaS de optimización logística para PyMEs. Una respuesta arquitectónica a un RFP de última milla.</p>
+                    <p class="eyebrow reveal d3" style="margin-top:54px;color:var(--accent-2)">Grupo Última Fila · Churba · Díaz Valdez · Noblia</p>
+                </div>
+                <div class="routing-map reveal-scale d2" aria-hidden="true">
+                    <div class="radar"></div>
+                    <div class="route-line"></div>
+                    <div class="pin"></div>
+                    <div class="pin"></div>
+                    <div class="pin"></div>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">00 · RFP</span><span class="slide-number">02 / 16</span></div>
+                    <h2 class="reveal">El problema no era “hacer un sistema”: era responder restricciones no negociables.</h2>
+                    <div class="pipeline">
+                        <div class="card pipe-step reveal d1"><div class="card-inner"><div class="metric">99.99%</div><h3>SLA</h3><p>Alta disponibilidad con balanceo, failover y escalado horizontal.</p></div></div>
+                        <div class="card pipe-step reveal d2"><div class="card-inner"><div class="metric">ZT</div><h3>Seguridad</h3><p>Zero Trust, aislamiento de tenant y cifrado AES-256.</p></div></div>
+                        <div class="card pipe-step reveal d3"><div class="card-inner"><div class="metric">↔</div><h3>Escala</h3><p>Microservicios preparados para crecer por módulo y demanda.</p></div></div>
+                        <div class="card pipe-step reveal d4"><div class="card-inner"><div class="metric">OFF</div><h3>Offline</h3><p>La app móvil debía operar con señal intermitente en ruta.</p></div></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">00 · Riesgos del cliente</span><span class="slide-number">03 / 16</span></div>
+                    <div class="two-col">
+                        <div>
+                            <h2 class="reveal">Cada diagrama que sigue responde a un riesgo concreto.</h2>
+                            <p class="reveal d1" style="margin-top:36px">El tribunal actúa como comité evaluador del cliente. Por eso defendemos decisiones, tradeoffs y supuestos.</p>
+                        </div>
+                        <div class="grid-2">
+                            <div class="card reveal d1"><div class="card-inner"><span class="tag">APIs externas</span><h3 style="margin-top:24px">Mapas y tráfico pueden caer</h3><p class="muted" style="margin-top:12px">Respuesta: interfaces + adapters + flujo manual de validación.</p></div></div>
+                            <div class="card reveal d2"><div class="card-inner"><span class="tag">Datos locales</span><h3 style="margin-top:24px">Direcciones argentinas imperfectas</h3><p class="muted" style="margin-top:12px">Respuesta: normalización y geocodificación antes de planificar.</p></div></div>
+                            <div class="card reveal d3"><div class="card-inner"><span class="tag">Campo</span><h3 style="margin-top:24px">Zonas con baja cobertura móvil</h3><p class="muted" style="margin-top:12px">Respuesta: eventos offline persistidos y sincronizados.</p></div></div>
+                            <div class="card reveal d4"><div class="card-inner"><span class="tag">Multi-tenant</span><h3 style="margin-top:24px">Riesgo de filtrado entre PyMEs</h3><p class="muted" style="margin-top:12px">Respuesta: isolation lógica + pruebas por tenant.</p></div></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">01 · Propuesta de valor</span><span class="slide-number">04 / 16</span></div>
+                    <h2 class="reveal">SaaS multi-tenant porque las PyMEs no pueden comprar infraestructura enterprise.</h2>
+                    <div class="decision-flow">
+                        <div class="card node reveal d1"><h3>Problema</h3><p>PyMEs con 1–20 vehículos necesitan optimizar última milla sin CAPEX.</p></div>
+                        <div class="arrow reveal d2">→</div>
+                        <div class="card node reveal d2"><h3>Decisión</h3><p>Modelo SaaS por suscripción con separación lógica por tenant.</p></div>
+                        <div class="arrow reveal d3">→</div>
+                        <div class="card node reveal d3"><h3>Tradeoff</h3><p>Menor costo operativo, más complejidad de aislamiento.</p></div>
+                        <div class="arrow reveal d4">→</div>
+                        <div class="card node reveal d4"><h3>Mitigación</h3><p>Pruebas de penetración tenant-to-tenant desde el inicio.</p></div>
+                    </div>
+                    <p class="quote reveal d5" style="margin-top:76px">No diseñamos para una empresa: diseñamos una plataforma reusable para muchas PyMEs.</p>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">01 · Mapa de valor</span><span class="slide-number">05 / 16</span></div>
+                    <h2 class="reveal">Los casos de uso se presentan como valor operativo, no como checklist.</h2>
+                    <div class="grid-4" style="margin-top:56px">
+                        <div class="card reveal d1"><div class="card-inner"><span class="tag">Supervisor</span><h3 style="margin-top:26px">Rutas y devoluciones</h3><p style="margin-top:14px">CU-05 optimiza itinerarios. CU-12 da visibilidad sobre reingresos.</p></div></div>
+                        <div class="card reveal d2"><div class="card-inner"><span class="tag">Repartidor</span><h3 style="margin-top:26px">Campo offline</h3><p style="margin-top:14px">CU-07 y CU-08 registran entregas, evidencias y problemas en ruta.</p></div></div>
+                        <div class="card reveal d3"><div class="card-inner"><span class="tag">Cliente final</span><h3 style="margin-top:26px">Tracking sin llamadas</h3><p style="margin-top:14px">CU-10 permite consultar el estado del envío en tiempo real.</p></div></div>
+                        <div class="card reveal d4"><div class="card-inner"><span class="tag">Ventas</span><h3 style="margin-top:26px">Ingreso centralizado</h3><p style="margin-top:14px">CU-03 soporta API, Excel o carga manual con validación.</p></div></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">02 · Modelo de dominio</span><span class="slide-number">06 / 16</span></div>
+                    <div class="two-col">
+                        <div>
+                            <h2 class="reveal">El modelo refleja cómo opera la logística real.</h2>
+                            <ul class="small-list reveal d1">
+                                <li><code>PuntoEntrega</code> representa una visita, no el pedido completo.</li>
+                                <li><code>Vehiculo</code> pertenece a la ruta de la jornada.</li>
+                                <li><code>Cliente</code> queda fuera de <code>Usuario</code> por seguridad conceptual.</li>
+                                <li><code>ServicioMapas</code> y <code>OptimizadorRutas</code> son interfaces.</li>
+                            </ul>
+                        </div>
+                        <img class="diagram-image reveal-scale d2" src="img/h2_clases.png" alt="Diagrama de clases del modelo de dominio LogiSmart">
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">02 · Decisión estrella</span><span class="slide-number">07 / 16</span></div>
+                    <h2 class="reveal"><code>PuntoEntrega</code> existe porque un intento de entrega tiene vida propia.</h2>
+                    <div class="decision-flow">
+                        <div class="card node reveal d1"><h3>Problema</h3><p>Un pedido puede fallar, reprogramarse y tener varias visitas.</p></div>
+                        <div class="arrow reveal d2">→</div>
+                        <div class="card node reveal d2"><h3>Decisión</h3><p>Separar <code>Ruta → PuntoEntrega → Pedido</code>.</p></div>
+                        <div class="arrow reveal d3">→</div>
+                        <div class="card node reveal d3"><h3>Ganamos</h3><p>Trazabilidad por intento, evidencia y hora real por visita.</p></div>
+                        <div class="arrow reveal d4">→</div>
+                        <div class="card node reveal d4"><h3>Pagamos</h3><p>Una clase extra y navegación más larga.</p></div>
+                    </div>
+                    <p class="quote reveal d5" style="margin-top:76px">La evidencia no pertenece al pedido: pertenece al intento de entrega.</p>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">02 · Tradeoffs de dominio</span><span class="slide-number">08 / 16</span></div>
+                    <div class="matrix reveal">
+                        <div class="head">Decisión</div><div class="head">Por qué</div><div class="head">Riesgo o costo</div>
+                        <div class="pattern"><code>Vehiculo</code> asociado a <code>Ruta</code></div><div>La asignación real depende de la jornada, la carga, peso y volumen.</div><div>El repartidor no ve su vehículo sin pasar por la ruta.</div>
+                        <div class="pattern"><code>Cliente</code> fuera de <code>Usuario</code></div><div>No usa backoffice ni permisos internos; solo tracking público.</div><div>Si aparece portal B2B, conviene migrar a RBAC.</div>
+                        <div class="pattern">Interfaces externas</div><div>El proveedor de mapas o tráfico puede cambiar o caer.</div><div>Más abstracción y adaptadores que mantener.</div>
+                        <div class="pattern"><code>Supervisor</code> con deuda controlada</div><div>Planifica, gestiona devoluciones y actualiza inventario en el alcance actual.</div><div>A escala se extrae <code>GestorDevoluciones</code>.</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">03 · Patrones GoF</span><span class="slide-number">09 / 16</span></div>
+                    <h2 class="reveal">No se defienden 20 patrones: se defienden los que compran más arquitectura.</h2>
+                    <div class="grid-3" style="margin-top:50px">
+                        <div class="card reveal d1"><div class="card-inner"><span class="tag">Builder</span><h3 style="margin-top:24px">Constructor telescópico</h3><p style="margin-top:12px">Envios con atributos opcionales se construyen paso a paso y validan invariantes.</p></div></div>
+                        <div class="card reveal d2"><div class="card-inner"><span class="tag">Abstract Factory</span><h3 style="margin-top:24px">Regionalización</h3><p style="margin-top:12px">Argentina y Brasil crean familias de vehículo, costo y mapas sin if/else.</p></div></div>
+                        <div class="card reveal d3"><div class="card-inner"><span class="tag">Decorator</span><h3 style="margin-top:24px">Servicios opcionales</h3><p style="margin-top:12px">Seguro, rastreo, prioridad y notificaciones sin 16 subclases.</p></div></div>
+                        <div class="card reveal d4"><div class="card-inner"><span class="tag">Adapter</span><h3 style="margin-top:24px">Proveedores externos</h3><p style="margin-top:12px">DHL, FedEx, pagos y mapas hablan una interfaz interna uniforme.</p></div></div>
+                        <div class="card reveal d5"><div class="card-inner"><span class="tag">Bridge</span><h3 style="margin-top:24px">Reportes flexibles</h3><p style="margin-top:12px">Tipo de reporte separado del formato: PDF, Excel, JSON o CSV.</p></div></div>
+                        <div class="card reveal d6"><div class="card-inner"><span class="tag">Composite</span><h3 style="margin-top:24px">Red logística</h3><p style="margin-top:12px">Centros nacionales, regionales y puntos se recorren uniformemente.</p></div></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">03 · Comportamiento</span><span class="slide-number">10 / 16</span></div>
+                    <div class="two-col">
+                        <div>
+                            <h2 class="reveal">Los patrones de comportamiento protegen reglas que van a cambiar.</h2>
+                            <ul class="small-list reveal d1">
+                                <li><strong>Chain of Responsibility:</strong> validaciones ordenadas y extensibles.</li>
+                                <li><strong>State:</strong> transiciones del envío sin switch gigante.</li>
+                                <li><strong>Strategy:</strong> tarifas intercambiables por política comercial.</li>
+                                <li><strong>Command:</strong> acciones offline encolables y reproducibles.</li>
+                            </ul>
+                        </div>
+                        <div class="grid-2">
+                            <img class="diagram-image reveal-scale d2" src="img/h11_cor.png" alt="Diagrama Chain of Responsibility de validadores">
+                            <img class="diagram-image reveal-scale d3" src="img/h13_state.png" alt="Diagrama State aplicado al envío">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">03 · Anticipar tribunal</span><span class="slide-number">11 / 16</span></div>
+                    <h2 class="reveal">“¿No era más fácil un enum + switch?”</h2>
+                    <div class="two-col" style="height:650px">
+                        <div class="card reveal d1"><div class="card-inner" style="padding:42px"><h3 style="font-size:46px">Sí, para 2 estados.</h3><p style="margin-top:24px;font-size:31px">Pero LogiSmart tiene seis estados con transiciones distintas: confirmado, en tránsito, en reparto, entregado, retenido y cancelado.</p></div></div>
+                        <div class="card reveal d2"><div class="card-inner" style="padding:42px"><h3 style="font-size:46px">No, para lógica evolutiva.</h3><p style="margin-top:24px;font-size:31px">State mantiene la regla cerca del estado. Agregar <code>RetenidoPorAduana</code> agrega una clase; no modifica un switch central.</p></div></div>
+                    </div>
+                    <p class="quote reveal d3">El patrón cuesta clases; compra Open/Closed y reduce el crecimiento cuadrático de condicionales.</p>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">04 · Persistencia</span><span class="slide-number">12 / 16</span></div>
+                    <div class="two-col">
+                        <div>
+                            <h2 class="reveal">El hito crítico: cruzar objetos puros con una base relacional sin ensuciar el dominio.</h2>
+                            <p class="reveal d1" style="margin-top:34px">Las entidades <code>Envio</code>, <code>Cliente</code>, <code>CentroDistribucion</code> y <code>Pago</code> no contienen SQL ni anotaciones de infraestructura.</p>
+                        </div>
+                        <img class="diagram-image reveal-scale d2" src="img/h14_persistencia.png" alt="Diagrama de la capa de persistencia con Data Mapper, Repository, Unit of Work y Lazy Load">
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">04 · Persistencia como sistema</span><span class="slide-number">13 / 16</span></div>
+                    <div class="matrix reveal">
+                        <div class="head">Patrón</div><div class="head">Problema que resuelve</div><div class="head">Tradeoff</div>
+                        <div class="pattern">Data Mapper</div><div>El dominio no sabe guardar; la BD no sabe de objetos.</div><div>Pureza y testabilidad a cambio de más clases mapper.</div>
+                        <div class="pattern">Repository</div><div>La lógica de negocio no debería conocer SQL, MongoDB o memoria.</div><div>Motor intercambiable a cambio de indirección.</div>
+                        <div class="pattern">Unit of Work</div><div>Crear un envío persiste varias entidades; si falla algo, debe hacer rollback.</div><div>Atomicidad real a cambio de coordinación en memoria.</div>
+                        <div class="pattern">Lazy Load</div><div>Cargar listas no debe traer historiales completos innecesarios.</div><div>Mejor rendimiento a cambio de proxies y cuidado de inicialización.</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">05 · Seguridad y offline</span><span class="slide-number">14 / 16</span></div>
+                    <h2 class="reveal">La arquitectura responde a operación real, no a un escenario ideal de laboratorio.</h2>
+                    <div class="grid-3" style="margin-top:62px">
+                        <div class="card reveal d1"><div class="card-inner"><span class="tag">Offline-first</span><h3 style="margin-top:24px">Eventos locales</h3><p style="margin-top:12px">Entrega, problema y evidencia se guardan localmente y se sincronizan al recuperar conexión.</p></div></div>
+                        <div class="card reveal d2"><div class="card-inner"><span class="tag">Cifrado</span><h3 style="margin-top:24px">Datos protegidos</h3><p style="margin-top:12px">Persistencia local encriptada para no exponer datos operativos del repartidor.</p></div></div>
+                        <div class="card reveal d3"><div class="card-inner"><span class="tag">Command</span><h3 style="margin-top:24px">Reproducción segura</h3><p style="margin-top:12px">Las acciones offline se modelan como comandos encolados y auditables.</p></div></div>
+                    </div>
+                    <p class="statement reveal d4" style="font-size:64px;margin-top:70px">La app no falla porque se corta la señal: degrada a modo local y conserva evidencia.</p>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">05 · Preguntas esperables</span><span class="slide-number">15 / 16</span></div>
+                    <div class="grid-2" style="gap:24px">
+                        <div class="card tribunal-card reveal d1"><div class="question">Microservicios</div><div class="answer">El costo operacional existe; se justifica por SLA 99.99%, escalado horizontal y demanda no uniforme por módulo.</div></div>
+                        <div class="card tribunal-card reveal d2"><div class="question">Data Mapper</div><div class="answer">Active Record era más rápido, pero mezcla SQL con reglas de negocio. La pureza permite testear dominio sin BD.</div></div>
+                        <div class="card tribunal-card reveal d3"><div class="question">Mapas caídos</div><div class="answer">Adapter + interfaz de mapas. El pedido queda pendiente de validación manual, no rechazado automáticamente.</div></div>
+                        <div class="card tribunal-card reveal d4"><div class="question">WhatsApp</div><div class="answer">Se agrega <code>NotificadorWhatsApp</code> implementando la interfaz; el controlador no cambia.</div></div>
+                        <div class="card tribunal-card reveal d5"><div class="question">Unit of Work</div><div class="answer">No reemplaza la transacción SQL: coordina operaciones de negocio sobre varios repositorios antes del flush.</div></div>
+                        <div class="card tribunal-card reveal d6"><div class="question">Desde cero</div><div class="answer">Migraríamos antes a RBAC y extraeríamos <code>GestorDevoluciones</code>. Es deuda declarada, no sorpresa.</div></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="topline"><span class="eyebrow reveal-left">Cierre</span><span class="slide-number">16 / 16</span></div>
+                    <h2 class="reveal">Lo que demostramos: cada patrón pagó su complejidad con una restricción del RFP.</h2>
+                    <div class="grid-4" style="margin-top:58px">
+                        <div class="card reveal d1"><div class="card-inner"><div class="metric">Flex</div><p style="margin-top:24px">Cambiar proveedor, motor de BD o región no toca el núcleo.</p></div></div>
+                        <div class="card reveal d2"><div class="card-inner"><div class="metric">Scale</div><p style="margin-top:24px">Escalado horizontal y módulos separables para demanda variable.</p></div></div>
+                        <div class="card reveal d3"><div class="card-inner"><div class="metric">Safe</div><p style="margin-top:24px">Tenants aislados, Zero Trust y datos offline cifrados.</p></div></div>
+                        <div class="card reveal d4"><div class="card-inner"><div class="metric">Mature</div><p style="margin-top:24px">Tradeoffs y deuda técnica reconocidos explícitamente.</p></div></div>
+                    </div>
+                    <p class="quote reveal d5" style="margin-top:72px">No implementamos patrones para cumplir un checklist; los usamos donde el problema justificaba el costo.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="deck-controls" aria-label="Controles de presentación">
+        <span id="slideCounter">01 / 16</span>
+        <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+        <span>← → · Space · E editar</span>
+    </div>
+    <div class="edit-hotzone" aria-hidden="true"></div>
+    <button class="edit-toggle" id="editToggle" title="Modo edición (E)" aria-label="Activar modo edición">✎</button>
+
+    <script>
+        /* === SLIDE PRESENTATION CONTROLLER === */
+        class SlidePresentation {
+            constructor() {
+                this.slides = Array.from(document.querySelectorAll(".slide"));
+                this.currentSlide = 0;
+                this.stage = document.getElementById("deckStage");
+                this.counter = document.getElementById("slideCounter");
+                this.progress = document.getElementById("progressFill");
+                this.lastWheel = 0;
+                this.setupStageScale();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.showSlide(0);
+            }
+
+            setupStageScale() {
+                const scale = () => {
+                    const factor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+                    const x = (window.innerWidth - 1920 * factor) / 2;
+                    const y = (window.innerHeight - 1080 * factor) / 2;
+                    this.stage.style.transform = `translate(${x}px, ${y}px) scale(${factor})`;
+                };
+                scale();
+                window.addEventListener("resize", scale);
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener("keydown", (event) => {
+                    if (event.target && event.target.getAttribute("contenteditable") === "true") return;
+                    if (["ArrowRight", "PageDown", " "].includes(event.key)) {
+                        event.preventDefault();
+                        this.next();
+                    }
+                    if (["ArrowLeft", "PageUp"].includes(event.key)) {
+                        event.preventDefault();
+                        this.previous();
+                    }
+                    if (event.key === "Home") this.showSlide(0);
+                    if (event.key === "End") this.showSlide(this.slides.length - 1);
+                });
+            }
+
+            setupTouchNav() {
+                let startX = 0;
+                let startY = 0;
+                document.addEventListener("touchstart", (event) => {
+                    startX = event.touches[0].clientX;
+                    startY = event.touches[0].clientY;
+                }, { passive: true });
+                document.addEventListener("touchend", (event) => {
+                    const dx = event.changedTouches[0].clientX - startX;
+                    const dy = event.changedTouches[0].clientY - startY;
+                    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+                        dx < 0 ? this.next() : this.previous();
+                    }
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                document.addEventListener("wheel", (event) => {
+                    const now = Date.now();
+                    if (now - this.lastWheel < 450 || Math.abs(event.deltaY) < 32) return;
+                    this.lastWheel = now;
+                    event.deltaY > 0 ? this.next() : this.previous();
+                }, { passive: true });
+            }
+
+            showSlide(index) {
+                this.currentSlide = Math.max(0, Math.min(index, this.slides.length - 1));
+                this.slides.forEach((slide, slideIndex) => {
+                    slide.classList.toggle("active", slideIndex === this.currentSlide);
+                    slide.classList.toggle("visible", slideIndex === this.currentSlide);
+                });
+                const current = String(this.currentSlide + 1).padStart(2, "0");
+                const total = String(this.slides.length).padStart(2, "0");
+                this.counter.textContent = `${current} / ${total}`;
+                this.progress.style.width = `${((this.currentSlide + 1) / this.slides.length) * 100}%`;
+                localStorage.setItem("logismart-current-slide", String(this.currentSlide));
+            }
+
+            next() { this.showSlide(this.currentSlide + 1); }
+            previous() { this.showSlide(this.currentSlide - 1); }
+        }
+
+        /* === INLINE EDITING SUPPORT === */
+        class InlineEditor {
+            constructor() {
+                this.isActive = false;
+                this.storageKey = "logismart-slide-edits-v1";
+                this.editableSelector = "h1, h2, h3, p, li, .tag, .metric, .question, .answer, .eyebrow";
+                this.restore();
+            }
+
+            toggleEditMode() {
+                this.isActive = !this.isActive;
+                document.getElementById("editToggle").classList.toggle("active", this.isActive);
+                document.querySelectorAll(this.editableSelector).forEach((node) => {
+                    node.setAttribute("contenteditable", this.isActive ? "true" : "false");
+                });
+                if (!this.isActive) this.save();
+            }
+
+            save() {
+                const data = Array.from(document.querySelectorAll(this.editableSelector)).map((node) => node.innerHTML);
+                localStorage.setItem(this.storageKey, JSON.stringify(data));
+            }
+
+            restore() {
+                const raw = localStorage.getItem(this.storageKey);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                Array.from(document.querySelectorAll(this.editableSelector)).forEach((node, index) => {
+                    if (typeof data[index] === "string") node.innerHTML = data[index];
+                });
+            }
+        }
+
+        const deck = new SlidePresentation();
+        const editor = new InlineEditor();
+
+        /* === EDIT HOTZONE BEHAVIOR === */
+        const hotzone = document.querySelector(".edit-hotzone");
+        const editToggle = document.getElementById("editToggle");
+        let hideTimeout = null;
+
+        hotzone.addEventListener("mouseenter", () => {
+            clearTimeout(hideTimeout);
+            editToggle.classList.add("show");
+        });
+        hotzone.addEventListener("mouseleave", () => {
+            hideTimeout = setTimeout(() => {
+                if (!editor.isActive) editToggle.classList.remove("show");
+            }, 400);
+        });
+        editToggle.addEventListener("mouseenter", () => clearTimeout(hideTimeout));
+        editToggle.addEventListener("mouseleave", () => {
+            hideTimeout = setTimeout(() => {
+                if (!editor.isActive) editToggle.classList.remove("show");
+            }, 400);
+        });
+        hotzone.addEventListener("click", () => editor.toggleEditMode());
+        editToggle.addEventListener("click", () => editor.toggleEditMode());
+
+        document.addEventListener("keydown", (event) => {
+            if ((event.key === "e" || event.key === "E") && !(event.target && event.target.getAttribute("contenteditable") === "true")) {
+                editor.toggleEditMode();
+            }
+            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+                event.preventDefault();
+                editor.save();
+            }
+        });
+
+        document.addEventListener("input", () => {
+            if (editor.isActive) editor.save();
+        });
+    </script>
+</body>
+</html>
