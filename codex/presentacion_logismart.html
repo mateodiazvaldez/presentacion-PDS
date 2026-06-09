@@ -10,18 +10,18 @@
     <style>
         /* === THEME VARIABLES === */
         :root {
-            --stage-bg: #030806;
-            --slide-bg: #06100d;
-            --ink: #f1f7ea;
-            --muted: #a8b8ad;
-            --soft: #d5dfd2;
-            --line: rgba(196, 255, 190, 0.17);
-            --panel: rgba(13, 28, 22, 0.82);
-            --panel-strong: rgba(20, 42, 33, 0.92);
-            --accent: #bef264;
-            --accent-2: #f59e0b;
-            --accent-3: #22d3ee;
-            --danger: #fb7185;
+            --stage-bg: #c4bba8;
+            --slide-bg: #F0EBDE;
+            --ink: #181818;
+            --muted: rgba(24,24,24,0.52);
+            --soft: rgba(24,24,24,0.65);
+            --line: rgba(31,43,224,0.18);
+            --panel: rgba(240,235,222,0.82);
+            --panel-strong: rgba(240,235,222,0.95);
+            --accent: #1F2BE0;
+            --accent-2: rgba(31,43,224,0.70);
+            --accent-3: rgba(31,43,224,0.40);
+            --danger: #1F2BE0;
             --font-display: "Instrument Serif", serif;
             --font-body: "IBM Plex Sans", sans-serif;
             --font-mono: "IBM Plex Mono", monospace;
@@ -181,10 +181,10 @@
             position: absolute;
             inset: 0;
             background:
-                radial-gradient(circle at 12% 18%, rgba(190, 242, 100, 0.16), transparent 34%),
-                radial-gradient(circle at 82% 12%, rgba(34, 211, 238, 0.12), transparent 28%),
-                radial-gradient(circle at 76% 88%, rgba(245, 158, 11, 0.11), transparent 30%),
-                linear-gradient(135deg, #030806 0%, #071611 48%, #0a1513 100%);
+                radial-gradient(circle at 12% 18%, rgba(31, 43, 224, 0.06), transparent 34%),
+                radial-gradient(circle at 82% 12%, rgba(31, 43, 224, 0.04), transparent 28%),
+                radial-gradient(circle at 76% 88%, rgba(31, 43, 224, 0.03), transparent 30%),
+                #F0EBDE;
             z-index: 0;
         }
 
@@ -193,8 +193,8 @@
             position: absolute;
             inset: 0;
             background-image:
-                linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+                linear-gradient(rgba(31, 43, 224, 0.09) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(31, 43, 224, 0.09) 1px, transparent 1px);
             background-size: 64px 64px;
             mask-image: radial-gradient(circle at 50% 50%, black, transparent 72%);
             z-index: 0;
@@ -302,7 +302,7 @@
         }
 
         .slide-number {
-            color: rgba(241, 247, 234, 0.58);
+            color: rgba(31, 43, 224, 0.45);
             font-family: var(--font-mono);
             font-size: 20px;
             letter-spacing: 0.08em;
@@ -330,10 +330,10 @@
 
         .card {
             position: relative;
-            border: 1px solid var(--line);
+            border: 1.5px solid var(--line);
             border-radius: 28px;
-            background: linear-gradient(180deg, rgba(18, 40, 31, 0.86), rgba(8, 18, 15, 0.76));
-            box-shadow: 0 28px 70px rgba(0, 0, 0, 0.28);
+            background: linear-gradient(180deg, rgba(240,235,222,0.96), rgba(240,235,222,0.82));
+            box-shadow: 0 4px 24px rgba(31,43,224,0.08);
             overflow: hidden;
         }
 
@@ -342,7 +342,7 @@
             position: absolute;
             inset: 0;
             border-radius: inherit;
-            background: linear-gradient(135deg, rgba(190, 242, 100, 0.12), transparent 32%, rgba(34, 211, 238, 0.07));
+            background: linear-gradient(135deg, rgba(31,43,224,0.06), transparent 32%, rgba(31,43,224,0.03));
             pointer-events: none;
         }
 
@@ -369,10 +369,10 @@
             align-items: center;
             min-height: 42px;
             padding: 9px 15px;
-            border: 1px solid rgba(190, 242, 100, 0.28);
+            border: 1px solid rgba(31,43,224,0.28);
             border-radius: 999px;
             color: var(--accent);
-            background: rgba(190, 242, 100, 0.08);
+            background: rgba(31,43,224,0.07);
             font-family: var(--font-mono);
             font-size: 18px;
             font-weight: 600;
@@ -424,11 +424,11 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            border: 1px solid rgba(241, 247, 234, 0.18);
+            border: 1.5px solid rgba(31,43,224,0.20);
             border-radius: 28px;
             background: rgba(255, 255, 255, 0.92);
             padding: 24px;
-            box-shadow: 0 32px 90px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 8px 40px rgba(31,43,224,0.10);
         }
 
         /* === TITLE SLIDE === */
@@ -461,11 +461,11 @@
             top: 280px;
             width: 560px;
             height: 220px;
-            border-top: 6px solid rgba(190, 242, 100, 0.72);
-            border-right: 6px solid rgba(190, 242, 100, 0.72);
+            border-top: 6px solid rgba(31,43,224,0.70);
+            border-right: 6px solid rgba(31,43,224,0.70);
             border-radius: 0 110px 0 0;
             transform: rotate(-18deg);
-            filter: drop-shadow(0 0 24px rgba(190, 242, 100, 0.35));
+            filter: drop-shadow(0 0 24px rgba(31,43,224,0.25));
         }
 
         .pin {
@@ -474,8 +474,8 @@
             height: 38px;
             border-radius: 50%;
             border: 8px solid var(--accent);
-            background: #071611;
-            box-shadow: 0 0 34px rgba(190, 242, 100, 0.45);
+            background: #F0EBDE;
+            box-shadow: 0 0 34px rgba(31,43,224,0.35);
         }
 
         .pin:nth-child(2) { left: 72px; top: 336px; }
@@ -488,11 +488,11 @@
             top: 130px;
             width: 390px;
             height: 390px;
-            border: 1px solid rgba(190, 242, 100, 0.22);
+            border: 1px solid rgba(31,43,224,0.22);
             border-radius: 50%;
             background:
-                repeating-radial-gradient(circle, rgba(190, 242, 100, 0.09) 0 1px, transparent 1px 62px),
-                conic-gradient(from 20deg, rgba(190, 242, 100, 0.28), transparent 28%, transparent);
+                repeating-radial-gradient(circle, rgba(31,43,224,0.09) 0 1px, transparent 1px 62px),
+                conic-gradient(from 20deg, rgba(31,43,224,0.28), transparent 28%, transparent);
             animation: sweep 9s linear infinite;
         }
 
@@ -559,14 +559,14 @@
         .matrix > div {
             min-height: 92px;
             padding: 22px 26px;
-            background: rgba(8, 18, 15, 0.92);
+            background: rgba(240,235,222,0.90);
             font-size: 24px;
             line-height: 1.22;
         }
 
         .matrix .head {
             color: var(--accent);
-            background: rgba(20, 42, 33, 0.96);
+            background: rgba(240,235,222,0.98);
             font-family: var(--font-mono);
             font-size: 18px;
             font-weight: 700;
@@ -609,10 +609,10 @@
             align-items: center;
             gap: 14px;
             padding: 10px 14px;
-            border: 1px solid rgba(241, 247, 234, 0.14);
+            border: 1px solid rgba(31,43,224,0.20);
             border-radius: 999px;
-            color: rgba(241, 247, 234, 0.78);
-            background: rgba(3, 8, 6, 0.76);
+            color: rgba(24,24,24,0.65);
+            background: rgba(240,235,222,0.88);
             backdrop-filter: blur(16px);
             font-family: var(--font-mono);
             font-size: 13px;
