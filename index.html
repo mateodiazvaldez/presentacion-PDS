@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LogiSmart — Presentaciones</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --paper: #F0EBDE;
+  --ink: #1F2BE0;
+  --ink-faint: rgba(31,43,224,0.09);
+  --ink-muted: rgba(31,43,224,0.18);
+  --ink-soft: rgba(31,43,224,0.38);
+  --charcoal: #181818;
+  --text-2: rgba(24,24,24,0.50);
+}
+
+html, body {
+  min-height: 100vh;
+  background: var(--paper);
+  font-family: 'Hanken Grotesk', sans-serif;
+  color: var(--charcoal);
+}
+
+body {
+  background-image:
+    linear-gradient(var(--ink-faint) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ink-faint) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Top hairline */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--ink);
+  z-index: 100;
+}
+
+.wrapper {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 80px 40px 100px;
+}
+
+.header {
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 28px;
+  margin-bottom: 64px;
+}
+
+.header-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 16px;
+}
+
+.header-title {
+  font-family: 'Newsreader', serif;
+  font-size: 72px;
+  font-weight: 400;
+  color: var(--charcoal);
+  letter-spacing: -0.025em;
+  line-height: 0.95;
+}
+
+.header-title span { color: var(--ink); }
+
+.header-sub {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 18px;
+  color: var(--text-2);
+  margin-top: 20px;
+  font-weight: 400;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+@media (max-width: 640px) {
+  .cards { grid-template-columns: 1fr; }
+  .header-title { font-size: 48px; }
+}
+
+.card {
+  display: block;
+  text-decoration: none;
+  border: 1.5px solid var(--ink);
+  padding: 40px 40px 36px;
+  background: rgba(240,235,222,0.7);
+  transition: background 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
+}
+
+.card:hover { background: rgba(31,43,224,0.04); transform: translateY(-2px); }
+.card:hover::before { transform: scaleX(1); }
+
+.card-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-tag::before {
+  content: '';
+  display: block;
+  width: 24px; height: 1.5px;
+  background: var(--ink-muted);
+}
+
+.card-title {
+  font-family: 'Newsreader', serif;
+  font-size: 40px;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.card-desc {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 15px;
+  color: var(--text-2);
+  line-height: 1.65;
+  margin-bottom: 32px;
+}
+
+.card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--ink-muted);
+  padding-top: 20px;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+.meta-row span:last-child { color: var(--charcoal); font-weight: 500; }
+
+.card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 10px 20px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.card:hover .card-cta {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.footer {
+  margin-top: 80px;
+  padding-top: 28px;
+  border-top: 1px solid var(--ink-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="header-eyebrow">Grupo Última Fila · UADE · 2025</div>
+    <h1 class="header-title">Logi<span>Smart</span></h1>
+    <p class="header-sub">Defensa TPO — Proceso de Desarrollo de Software. Dos versiones de la presentación.</p>
+  </div>
+
+  <div class="cards">
+
+    <a class="card" href="claude/logismart-defensa.html">
+      <div class="card-tag">Claude Code</div>
+      <div class="card-title">Cobalt Grid</div>
+      <p class="card-desc">
+        Estilo editorial académico. Tipografía serif Newsreader + Hanken Grotesk.
+        Fondo papel crema con grilla de 40px. Animaciones de reveal escalonado.
+      </p>
+      <div class="card-meta">
+        <div class="meta-row"><span>Slides</span><span>29</span></div>
+        <div class="meta-row"><span>Densidad</span><span>Speaker-led</span></div>
+        <div class="meta-row"><span>Paleta</span><span>#F0EBDE + #1F2BE0</span></div>
+      </div>
+      <div class="card-cta">Abrir presentación →</div>
+    </a>
+
+    <a class="card" href="codex/presentacion_logismart.html">
+      <div class="card-tag">Codex</div>
+      <div class="card-title">Dark Tech</div>
+      <p class="card-desc">
+        Estilo técnico oscuro. Fondo profundo con acentos de color.
+        Diseñada de forma independiente por otro agente.
+      </p>
+      <div class="card-meta">
+        <div class="meta-row"><span>Versión</span><span>Original</span></div>
+        <div class="meta-row"><span>Tema</span><span>Dark</span></div>
+        <div class="meta-row"><span>Agente</span><span>Codex</span></div>
+      </div>
+      <div class="card-cta">Abrir presentación →</div>
+    </a>
+
+  </div>
+
+  <div class="footer">
+    <span>UADE · FICE · Proceso de Desarrollo de Software</span>
+    <span>Churba · Díaz Valdez · Noblia</span>
+  </div>
+
+</div>
+</body>
+</html>
