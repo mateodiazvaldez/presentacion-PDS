@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LogiSmart — Defensa TPO 2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* === RESET === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* === VIEWPORT BASE === */
+html, body { width: 100%; height: 100%; overflow: hidden; background: #c4bba8; }
+.deck-viewport { position: fixed; inset: 0; overflow: hidden; background: #c4bba8; }
+.deck-stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 0 0; }
+.slide { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; display: block; visibility: hidden; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+.slide.active, .slide.visible { visibility: visible; opacity: 1; pointer-events: auto; z-index: 1; }
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+/* === COBALT GRID SYSTEM === */
+:root {
+  --paper: #F0EBDE;
+  --ink: #1F2BE0;
+  --ink-faint: rgba(31,43,224,0.09);
+  --ink-soft: rgba(31,43,224,0.35);
+  --ink-muted: rgba(31,43,224,0.18);
+  --charcoal: #181818;
+  --text-2: rgba(24,24,24,0.52);
+  --nr: 'Newsreader', serif;
+  --hg: 'Hanken Grotesk', sans-serif;
+  --dm: 'DM Mono', monospace;
+}
+
+/* === STAGE: permanent 40px graph-paper === */
+.deck-stage::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--ink-faint) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ink-faint) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 0; pointer-events: none;
+}
+
+/* === SLIDE BASE === */
+.slide { background: var(--paper); font-family: var(--hg); }
+
+/* top hairline */
+.slide::before {
+  content: ''; position: absolute;
+  top: 28px; left: 72px; right: 72px;
+  height: 1.5px; background: var(--ink); z-index: 10;
+}
+/* bottom hairline */
+.slide::after {
+  content: ''; position: absolute;
+  bottom: 22px; left: 72px; right: 72px;
+  height: 1.5px; background: var(--ink); z-index: 10;
+}
+
+/* === PAGENUM === */
+.pn {
+  position: absolute; right: 76px; bottom: 50px;
+  font-family: var(--dm); font-size: 12px;
+  color: var(--ink-soft); letter-spacing: 0.08em; z-index: 10;
+}
+
+/* === SECTION CHROME === */
+.sec-label {
+  position: absolute; top: 50px; left: 76px;
+  font-family: var(--dm); font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-soft); z-index: 10;
+}
+
+/* === CONTENT FRAME === */
+.cf {
+  position: absolute;
+  top: 88px; left: 72px; right: 72px; bottom: 88px;
+  z-index: 2;
+}
+
+/* === TOPBAR PATTERN === */
+.topbar {
+  display: flex; align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: 22px;
+  border-bottom: 1.5px solid var(--ink);
+  margin-bottom: 52px;
+}
+.topbar-h {
+  font-family: var(--nr);
+  font-size: 82px; font-weight: 400;
+  line-height: 0.95; color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.topbar-tag {
+  font-family: var(--dm); font-size: 13px;
+  color: var(--ink-soft); letter-spacing: 0.06em;
+  padding-bottom: 6px;
+}
+
+/* === LEDGER === */
+.ledger { display: flex; flex-direction: column; border-top: 1px solid var(--ink-muted); }
+.lr {
+  display: flex; align-items: baseline; gap: 40px;
+  padding: 26px 0; border-bottom: 1px solid var(--ink-muted);
+}
+.lr-num { font-family: var(--dm); font-size: 12px; color: var(--ink-soft); min-width: 28px; }
+.lr-label { font-family: var(--hg); font-size: 30px; font-weight: 600; color: var(--charcoal); flex: 1; }
+.lr-detail { font-family: var(--hg); font-size: 20px; color: var(--text-2); max-width: 680px; text-align: right; line-height: 1.4; }
+
+/* === OPENER SLIDES === */
+.opener-num {
+  font-family: var(--nr); font-size: 210px; font-weight: 400;
+  color: rgba(31,43,224,0.08); line-height: 0.85;
+  letter-spacing: -0.04em; display: block;
+}
+.opener-title {
+  font-family: var(--nr); font-size: 96px; font-weight: 400;
+  color: var(--ink); letter-spacing: -0.02em; line-height: 1;
+}
+.opener-sub {
+  font-family: var(--hg); font-size: 26px; font-weight: 400;
+  color: var(--text-2); margin-top: 24px; line-height: 1.45;
+}
+.opener-time {
+  position: absolute; bottom: 90px; left: 0;
+  font-family: var(--dm); font-size: 12px;
+  color: var(--ink-soft); letter-spacing: 0.1em;
+}
+
+/* === PIXEL GLITCH (on opener/cover/colofon) === */
+.glitch-col {
+  position: absolute; right: 0; top: 28px; bottom: 22px;
+  width: 400px; border-left: 1px solid var(--ink-muted);
+  display: flex; flex-direction: column;
+  justify-content: center; padding: 80px 64px;
+  z-index: 5; overflow: hidden;
+}
+.px-grid { display: flex; flex-direction: column; gap: 5px; margin-bottom: 48px; }
+.px-row { display: flex; gap: 5px; }
+.px-cell { width: 14px; height: 14px; background: var(--ink-muted); }
+.px-cell.on { background: var(--ink); }
+.px-cell.mid { background: var(--ink); opacity: 0.45; }
+
+.scan-stack { display: flex; flex-direction: column; gap: 10px; }
+.scan { height: 5px; background: var(--ink); opacity: 0.07; border-radius: 0; }
+.scan:nth-child(1) { width: 100%; }
+.scan:nth-child(2) { width: 78%; opacity: 0.11; }
+.scan:nth-child(3) { width: 55%; opacity: 0.06; }
+.scan:nth-child(4) { width: 88%; opacity: 0.09; }
+.scan:nth-child(5) { width: 45%; opacity: 0.13; }
+.scan:nth-child(6) { width: 70%; opacity: 0.05; }
+.scan:nth-child(7) { width: 92%; opacity: 0.08; }
+.scan:nth-child(8) { width: 62%; opacity: 0.10; }
+
+.idx-list { width: 100%; }
+.idx-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 0; border-bottom: 1px solid var(--ink-muted);
+  font-family: var(--dm); font-size: 11px;
+  letter-spacing: 0.10em; color: var(--text-2);
+  text-transform: uppercase;
+}
+.idx-row:first-child { border-top: 1px solid var(--ink-muted); }
+.idx-row.cur { color: var(--ink); }
+.idx-n { color: var(--ink); min-width: 20px; font-weight: 500; }
+
+/* === BODY SCALE === */
+.b-lede { font-family: var(--hg); font-size: 30px; font-weight: 400; color: var(--charcoal); line-height: 1.5; }
+.b-body { font-family: var(--hg); font-size: 22px; font-weight: 400; color: var(--text-2); line-height: 1.65; }
+.b-strong { color: var(--charcoal); font-weight: 600; }
+.micro { font-family: var(--hg); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-soft); }
+
+/* === PATTERN BLOCK === */
+.pat-block {
+  border: 1.5px solid var(--ink);
+  padding: 36px 44px; margin-bottom: 32px;
+  background: rgba(31,43,224,0.03);
+}
+.pat-name {
+  font-family: var(--dm); font-size: 12px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink); margin-bottom: 12px;
+}
+.pat-h {
+  font-family: var(--nr); font-size: 58px; font-weight: 400;
+  color: var(--charcoal); letter-spacing: -0.02em;
+  line-height: 1; margin-bottom: 16px;
+}
+.pat-body { font-family: var(--hg); font-size: 22px; color: var(--text-2); line-height: 1.55; }
+.pat-code {
+  font-family: var(--dm); font-size: 14px; color: var(--ink);
+  margin-top: 18px; padding: 10px 14px;
+  border-left: 2.5px solid var(--ink);
+  background: rgba(31,43,224,0.05);
+  line-height: 1.6;
+}
+
+/* === TWO-COL === */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; }
+
+/* === STAT CALLOUT === */
+.stat-callout {
+  display: inline-block;
+  font-family: var(--nr); font-size: 140px; font-weight: 400;
+  color: var(--ink); letter-spacing: -0.04em; line-height: 1;
+}
+.stat-label { font-family: var(--hg); font-size: 22px; color: var(--text-2); margin-top: 8px; }
+
+/* === TAG CHIP === */
+.chip {
+  display: inline-block;
+  font-family: var(--dm); font-size: 11px;
+  letter-spacing: 0.10em; text-transform: uppercase;
+  color: var(--ink); border: 1px solid var(--ink);
+  padding: 6px 14px; margin: 4px 6px 4px 0;
+}
+.chip-fill { background: var(--ink); color: var(--paper); }
+
+/* === STATE FLOW === */
+.state-flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
+.state-box {
+  font-family: var(--dm); font-size: 13px;
+  letter-spacing: 0.06em; color: var(--charcoal);
+  border: 1.5px solid var(--ink); padding: 14px 20px;
+  background: rgba(31,43,224,0.04);
+}
+.state-arrow {
+  font-size: 20px; color: var(--ink-soft);
+  padding: 0 10px; flex-shrink: 0;
+}
+
+/* === REVEAL ANIMATIONS === */
+.rv { opacity: 0; transform: translateY(16px); transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+.slide.visible .rv { opacity: 1; transform: none; }
+.rv.d1 { transition-delay: 0.05s; }
+.rv.d2 { transition-delay: 0.18s; }
+.rv.d3 { transition-delay: 0.31s; }
+.rv.d4 { transition-delay: 0.44s; }
+.rv.d5 { transition-delay: 0.57s; }
+.rv.d6 { transition-delay: 0.70s; }
+.fd { opacity: 0; transition: opacity 0.85s ease; }
+.slide.visible .fd { opacity: 1; }
+.fd.d2 { transition-delay: 0.25s; }
+.fd.d3 { transition-delay: 0.45s; }
+
+/* === EDIT MODE === */
+body.edit-mode [data-e]:hover { outline: 2px dashed rgba(31,43,224,0.45); cursor: text; }
+body.edit-mode [data-e]:focus { outline: 2.5px solid var(--ink); }
+#edit-hint {
+  position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+  font-family: var(--dm); font-size: 11px; letter-spacing: 0.12em;
+  color: var(--ink); background: var(--paper); border: 1px solid var(--ink);
+  padding: 7px 18px; z-index: 9999; display: none;
+}
+body.edit-mode #edit-hint { display: block; }
+</style>
+</head>
+<body>
+<div id="edit-hint">EDIT MODE — Click text to edit · Ctrl+S save · Esc exit</div>
+
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage">
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 01 — PORTADA
+═══════════════════════════════════════════ -->
+<section class="slide active" id="s1">
+  <div class="cf" style="right:400px;">
+    <div style="margin-top:60px;">
+      <div class="micro rv d1" data-e>Grupo Última Fila · Defensa TPO 2025</div>
+      <h1 class="rv d2" data-e style="font-family:var(--nr);font-size:160px;font-weight:400;color:var(--charcoal);letter-spacing:-0.03em;line-height:0.9;margin-top:28px;margin-bottom:36px;">Logi<span style="color:var(--ink);">Smart</span></h1>
+      <div class="rv d3" style="height:1.5px;background:var(--ink);width:520px;margin-bottom:36px;"></div>
+      <p class="b-lede rv d4" data-e style="max-width:760px;">Plataforma de Optimización Logística para PyMEs.<br>Propuesta arquitectónica en respuesta al RFP.</p>
+      <div class="rv d5" style="margin-top:48px;display:flex;gap:40px;flex-wrap:wrap;">
+        <div>
+          <div class="micro" style="margin-bottom:8px;">Equipo</div>
+          <div class="b-body" data-e>Churba · Díaz Valdez · Noblia</div>
+        </div>
+        <div>
+          <div class="micro" style="margin-bottom:8px;">Docente</div>
+          <div class="b-body" data-e>Salas, Joaquín</div>
+        </div>
+        <div>
+          <div class="micro" style="margin-bottom:8px;">Institución</div>
+          <div class="b-body" data-e>UADE · FICE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="glitch-col fd d2">
+    <div class="px-grid">
+      <div class="px-row"><div class="px-cell on"></div><div class="px-cell on"></div><div class="px-cell"></div><div class="px-cell mid"></div><div class="px-cell on"></div><div class="px-cell"></div></div>
+      <div class="px-row"><div class="px-cell on"></div><div class="px-cell"></div><div class="px-cell on"></div><div class="px-cell"></div><div class="px-cell"></div><div class="px-cell on"></div></div>
+      <div class="px-row"><div class="px-cell mid"></div><div class="px-cell on"></div><div class="px-cell on"></div><div class="px-cell on"></div><div class="px-cell mid"></div><div class="px-cell"></div></div>
+      <div class="px-row"><div class="px-cell"></div><div class="px-cell mid"></div><div class="px-cell"></div><div class="px-cell on"></div><div class="px-cell on"></div><div class="px-cell mid"></div></div>
+      <div class="px-row"><div class="px-cell on"></div><div class="px-cell"></div><div class="px-cell mid"></div><div class="px-cell"></div><div class="px-cell on"></div><div class="px-cell"></div></div>
+    </div>
+    <div class="idx-list">
+      <div class="idx-row cur"><span class="idx-n">00</span>El RFP</div>
+      <div class="idx-row"><span class="idx-n">01</span>Propuesta de Valor</div>
+      <div class="idx-row"><span class="idx-n">02</span>Modelo de Dominio</div>
+      <div class="idx-row"><span class="idx-n">03</span>Patrones GoF</div>
+      <div class="idx-row"><span class="idx-n">04</span>Capa de Persistencia</div>
+      <div class="idx-row"><span class="idx-n">05</span>Cierre</div>
+    </div>
+  </div>
+
+  <span class="pn">01 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 02 — OPENER: EL RFP
+═══════════════════════════════════════════ -->
+<section class="slide" id="s2">
+  <div class="cf" style="right:400px;display:flex;flex-direction:column;justify-content:center;">
+    <span class="opener-num rv d1">00</span>
+    <h2 class="opener-title rv d2" data-e>El RFP</h2>
+    <p class="opener-sub rv d3" data-e>El problema a resolver.<br>Lo que el cliente nos pide y lo que no es negociable.</p>
+    <div class="opener-time rv d4">2 min</div>
+  </div>
+  <div class="glitch-col fd d2">
+    <div class="scan-stack">
+      <div class="scan"></div><div class="scan"></div><div class="scan"></div>
+      <div class="scan"></div><div class="scan"></div><div class="scan"></div>
+      <div class="scan"></div><div class="scan"></div>
+    </div>
+  </div>
+  <span class="pn">02 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 03 — EL CLIENTE
+═══════════════════════════════════════════ -->
+<section class="slide" id="s3">
+  <div class="sec-label">00 — El RFP</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>El Cliente</h2>
+      <span class="topbar-tag">Contexto del RFP</span>
+    </div>
+    <div class="two-col" style="align-items:start;">
+      <div>
+        <p class="b-lede rv d1" data-e style="margin-bottom:36px;"><span class="b-strong">PyME logística argentina.</span><br>Gestiona rutas, repartidores y centros de distribución.</p>
+        <p class="b-body rv d2" data-e>Opera sin herramientas digitales integradas. Proceso manual genera errores, demoras y pérdida de clientes.</p>
+      </div>
+      <div class="rv d3">
+        <div style="border:1.5px solid var(--ink);padding:40px;margin-bottom:32px;">
+          <div class="micro" style="margin-bottom:16px;">Problema central</div>
+          <p class="b-lede" data-e><span class="b-strong">Última milla</span> sin visibilidad.<br>Sin trazabilidad en tiempo real.</p>
+        </div>
+        <div style="border:1px solid var(--ink-muted);padding:40px;">
+          <div class="micro" style="margin-bottom:16px;">Actores identificados</div>
+          <div class="b-body" data-e>
+            Administrador · Supervisor · Repartidor<br>
+            Cliente Final · Personal de Carga · Operador de Ventas
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="pn">03 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 04 — ATRIBUTOS NO NEGOCIABLES
+═══════════════════════════════════════════ -->
+<section class="slide" id="s4">
+  <div class="sec-label">00 — El RFP</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Atributos no negociables</h2>
+      <span class="topbar-tag">Requisitos de calidad</span>
+    </div>
+    <div class="ledger">
+      <div class="lr rv d1">
+        <span class="lr-num">01</span>
+        <span class="lr-label" data-e>Disponibilidad 99.99%</span>
+        <span class="lr-detail" data-e>SLA de cuatro nueves · máx. 52 min de downtime/año</span>
+      </div>
+      <div class="lr rv d2">
+        <span class="lr-num">02</span>
+        <span class="lr-label" data-e>Seguridad Zero Trust</span>
+        <span class="lr-detail" data-e>AES-256 en reposo · TLS 1.3 en tránsito · sin confianza implícita</span>
+      </div>
+      <div class="lr rv d3">
+        <span class="lr-num">03</span>
+        <span class="lr-label" data-e>Escalabilidad horizontal</span>
+        <span class="lr-detail" data-e>Multi-tenant · crece sin rediseño · microservicios</span>
+      </div>
+      <div class="lr rv d4">
+        <span class="lr-num">04</span>
+        <span class="lr-label" data-e>Integridad de datos</span>
+        <span class="lr-detail" data-e>Transacciones atómicas · consistencia eventual controlada</span>
+      </div>
+    </div>
+  </div>
+  <span class="pn">04 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 05 — RIESGOS
+═══════════════════════════════════════════ -->
+<section class="slide" id="s5">
+  <div class="sec-label">00 — El RFP</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Riesgos identificados</h2>
+      <span class="topbar-tag">Risk register</span>
+    </div>
+    <div class="three-col">
+      <div class="rv d1" style="border:1.5px solid var(--ink);padding:36px;">
+        <div class="micro" style="margin-bottom:16px;color:var(--ink);">R-01</div>
+        <div class="b-lede" style="font-size:24px;margin-bottom:14px;" data-e>Dependencia de APIs externas</div>
+        <div class="b-body" data-e>GPS, pagos, geocodificación. Fallos de terceros afectan la operación core.</div>
+        <div style="margin-top:20px;font-family:var(--dm);font-size:11px;color:var(--ink-soft);">MITIGACIÓN: Circuit Breaker + fallback local</div>
+      </div>
+      <div class="rv d2" style="border:1.5px solid var(--ink);padding:36px;">
+        <div class="micro" style="margin-bottom:16px;color:var(--ink);">R-02</div>
+        <div class="b-lede" style="font-size:24px;margin-bottom:14px;" data-e>Calidad de datos de entrada</div>
+        <div class="b-body" data-e>Datos incorrectos en dirección y peso generan rutas inválidas.</div>
+        <div style="margin-top:20px;font-family:var(--dm);font-size:11px;color:var(--ink-soft);">MITIGACIÓN: Chain of Responsibility de validación</div>
+      </div>
+      <div class="rv d3" style="border:1.5px solid var(--ink);padding:36px;">
+        <div class="micro" style="margin-bottom:16px;color:var(--ink);">R-03</div>
+        <div class="b-lede" style="font-size:24px;margin-bottom:14px;" data-e>Cobertura geográfica</div>
+        <div class="b-body" data-e>Zonas sin conectividad estable. Repartidores off-grid.</div>
+        <div style="margin-top:20px;font-family:var(--dm);font-size:11px;color:var(--ink-soft);">MITIGACIÓN: Offline-First · sync diferido</div>
+      </div>
+    </div>
+  </div>
+  <span class="pn">05 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 06 — OPENER: PROPUESTA DE VALOR
+═══════════════════════════════════════════ -->
+<section class="slide" id="s6">
+  <div class="cf" style="right:400px;display:flex;flex-direction:column;justify-content:center;">
+    <span class="opener-num rv d1">01</span>
+    <h2 class="opener-title rv d2" data-e>Propuesta de Valor</h2>
+    <p class="opener-sub rv d3" data-e>Lo que ofrecemos al cliente.<br>Por qué LogiSmart y no una hoja de cálculo.</p>
+    <div class="opener-time rv d4">3–4 min</div>
+  </div>
+  <div class="glitch-col fd d2">
+    <div class="scan-stack">
+      <div class="scan"></div><div class="scan"></div><div class="scan"></div>
+      <div class="scan"></div><div class="scan"></div><div class="scan"></div>
+      <div class="scan"></div><div class="scan"></div>
+    </div>
+  </div>
+  <span class="pn">06 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 07 — SAAS MULTI-TENANT
+═══════════════════════════════════════════ -->
+<section class="slide" id="s7">
+  <div class="sec-label">01 — Propuesta de Valor</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>SaaS Multi-Tenant</h2>
+      <span class="topbar-tag">Modelo de negocio</span>
+    </div>
+    <div class="two-col" style="align-items:start;">
+      <div>
+        <p class="b-lede rv d1" data-e style="margin-bottom:32px;">Una sola plataforma.<br><span class="b-strong">Múltiples empresas.</span><br>Sin instalación, sin servidor propio.</p>
+        <p class="b-body rv d2" data-e>El cliente paga por uso. Escala automáticamente a medida que su operación crece. Actualizaciones continuas sin downtime.</p>
+        <div class="rv d3" style="margin-top:36px;">
+          <span class="chip chip-fill">Multi-tenant</span>
+          <span class="chip">Subscription</span>
+          <span class="chip">Auto-scaling</span>
+          <span class="chip">Zero-deploy</span>
+        </div>
+      </div>
+      <div class="rv d3">
+        <div class="pat-block">
+          <div class="pat-name">Arquitectura de referencia</div>
+          <div class="b-body" data-e style="margin-bottom:16px;">
+            API Gateway → Microservicios independientes → Base de datos por tenant (aislamiento fuerte)
+          </div>
+          <div class="pat-code" data-e>
+            TenantContext.get().getEmpresaId()<br>
+            → routing automático por tenant
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="pn">07 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 08 — MAPA DE VALOR
+═══════════════════════════════════════════ -->
+<section class="slide" id="s8">
+  <div class="sec-label">01 — Propuesta de Valor</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Mapa de Valor</h2>
+      <span class="topbar-tag">Valor entregado</span>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="micro rv d1" style="margin-bottom:20px;">Dolor que aliviamos</div>
+        <div class="ledger">
+          <div class="lr rv d2" style="padding:20px 0;"><span class="lr-label" style="font-size:22px;" data-e>Seguimiento manual de envíos</span></div>
+          <div class="lr rv d3" style="padding:20px 0;"><span class="lr-label" style="font-size:22px;" data-e>Cálculo de costos inconsistente</span></div>
+          <div class="lr rv d4" style="padding:20px 0;"><span class="lr-label" style="font-size:22px;" data-e>Sin trazabilidad de estados</span></div>
+          <div class="lr rv d5" style="padding:20px 0;"><span class="lr-label" style="font-size:22px;" data-e>Validaciones omitidas en carga</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="micro rv d1" style="margin-bottom:20px;">Lo que ganamos</div>
+        <div class="ledger">
+          <div class="lr rv d2" style="padding:20px 0;"><span class="lr-label" style="font-size:22px;color:var(--ink);" data-e>GPS + State: seguimiento en tiempo real</span></div>
+          <div class="lr rv d3" style="padding:20px 0;"><span class="lr-label" style="font-size:22px;color:var(--ink);" data-e>Strategy: 5 estrategias de tarifa</span></div>
+          <div class="lr rv d4" style="padding:20px 0;"><span class="lr-label" style="font-size:22px;color:var(--ink);" data-e>State: máquina de 6 estados tipada</span></div>
+          <div class="lr rv d5" style="padding:20px 0;"><span class="lr-label" style="font-size:22px;color:var(--ink);" data-e>Chain of Responsibility: 5 capas</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="pn">08 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 09 — SUPUESTOS CRÍTICOS
+═══════════════════════════════════════════ -->
+<section class="slide" id="s9">
+  <div class="sec-label">01 — Propuesta de Valor</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Supuestos Críticos</h2>
+      <span class="topbar-tag">Lo que asumimos</span>
+    </div>
+    <div class="three-col">
+      <div class="rv d1" style="border-top:3px solid var(--ink);padding-top:28px;">
+        <div class="micro" style="margin-bottom:16px;">Supuesto 1</div>
+        <div class="b-lede" style="font-size:26px;margin-bottom:14px;" data-e>Conectividad mínima disponible</div>
+        <div class="b-body" data-e>Los repartidores tienen acceso intermitente a internet. El sistema opera en modo offline y sincroniza al reconectar.</div>
+      </div>
+      <div class="rv d2" style="border-top:3px solid var(--ink);padding-top:28px;">
+        <div class="micro" style="margin-bottom:16px;">Supuesto 2</div>
+        <div class="b-lede" style="font-size:26px;margin-bottom:14px;" data-e>Adopción gradual del equipo</div>
+        <div class="b-body" data-e>Curva de aprendizaje de 30 días. Capacitación incluida en el onboarding del cliente.</div>
+      </div>
+      <div class="rv d3" style="border-top:3px solid var(--ink);padding-top:28px;">
+        <div class="micro" style="margin-bottom:16px;">Supuesto 3</div>
+        <div class="b-lede" style="font-size:26px;margin-bottom:14px;" data-e>Regulaciones estables</div>
+        <div class="b-body" data-e>Abstract Factory permite adaptar la plataforma a cambios regulatorios por región sin reescribir el core.</div>
+      </div>
+    </div>
+  </div>
+  <span class="pn">09 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 10 — OPENER: MODELO DE DOMINIO
+═══════════════════════════════════════════ -->
+<section class="slide" id="s10">
+  <div class="cf" style="right:400px;display:flex;flex-direction:column;justify-content:center;">
+    <span class="opener-num rv d1">02</span>
+    <h2 class="opener-title rv d2" data-e>Modelo de Dominio</h2>
+    <p class="opener-sub rv d3" data-e>Las cuatro decisiones de diseño que definen la arquitectura del sistema.</p>
+    <div class="opener-time rv d4">4–5 min</div>
+  </div>
+  <div class="glitch-col fd d2">
+    <div class="scan-stack">
+      <div class="scan"></div><div class="scan"></div><div class="scan"></div>
+      <div class="scan"></div><div class="scan"></div><div class="scan"></div>
+      <div class="scan"></div><div class="scan"></div>
+    </div>
+  </div>
+  <span class="pn">10 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 11 — ACTORES Y CASOS DE USO
+═══════════════════════════════════════════ -->
+<section class="slide" id="s11">
+  <div class="sec-label">02 — Modelo de Dominio</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Actores y Casos de Uso</h2>
+      <span class="topbar-tag">12 CU · 6 actores internos</span>
+    </div>
+    <div class="two-col" style="align-items:start;">
+      <div>
+        <div class="micro rv d1" style="margin-bottom:20px;">Actores internos</div>
+        <div class="ledger">
+          <div class="lr rv d2" style="padding:16px 0;"><span class="lr-num">A1</span><span class="lr-label" style="font-size:22px;">Administrador</span></div>
+          <div class="lr rv d2" style="padding:16px 0;"><span class="lr-num">A2</span><span class="lr-label" style="font-size:22px;">Supervisor de Rutas</span></div>
+          <div class="lr rv d3" style="padding:16px 0;"><span class="lr-num">A3</span><span class="lr-label" style="font-size:22px;">Repartidor</span></div>
+          <div class="lr rv d3" style="padding:16px 0;"><span class="lr-num">A4</span><span class="lr-label" style="font-size:22px;">Cliente Final</span></div>
+          <div class="lr rv d4" style="padding:16px 0;"><span class="lr-num">A5</span><span class="lr-label" style="font-size:22px;">Personal de Carga</span></div>
+          <div class="lr rv d4" style="padding:16px 0;"><span class="lr-num">A6</span><span class="lr-label" style="font-size:22px;">Operador de Ventas</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="micro rv d1" style="margin-bottom:20px;">Casos de uso críticos</div>
+        <div class="b-body rv d2" style="line-height:2;" data-e>
+          CU-01 Registrar envío · CU-02 Calcular costo<br>
+          CU-03 Asignar ruta · CU-04 Actualizar estado<br>
+          CU-05 Validar carga · CU-06 Procesar pago<br>
+          CU-07 Gestionar usuario · CU-08 Generar reporte<br>
+          CU-09 Notificar cliente · CU-10 Cancelar envío<br>
+          CU-11 Ver historial · CU-12 Auditar transacción
+        </div>
+        <div class="rv d3" style="margin-top:28px;padding:20px 24px;border-left:3px solid var(--ink);background:rgba(31,43,224,0.04);">
+          <span class="b-body"><span class="b-strong">LogiSmartController</span> — orquestador central de los 12 CU</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="pn">11 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 12 — ENTIDADES DEL DOMINIO
+═══════════════════════════════════════════ -->
+<section class="slide" id="s12">
+  <div class="sec-label">02 — Modelo de Dominio</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Entidades del Dominio</h2>
+      <span class="topbar-tag">Modelo de objetos</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:32px;">
+      <div class="rv d1" style="border:1.5px solid var(--ink);padding:30px;">
+        <div class="pat-name">Entidad central</div>
+        <div style="font-family:var(--nr);font-size:48px;font-weight:400;color:var(--charcoal);letter-spacing:-0.02em;margin-bottom:14px;" data-e>Envío</div>
+        <div class="b-body" data-e>10+ atributos. Estado, costo, ruta, origen, destino, peso, volumen.</div>
+        <div class="pat-code" style="font-size:12px;" data-e>Builder pattern<br>→ construcción fluida</div>
+      </div>
+      <div class="rv d2" style="border:1.5px solid var(--ink);padding:30px;">
+        <div class="pat-name">Entidad</div>
+        <div style="font-family:var(--nr);font-size:48px;font-weight:400;color:var(--charcoal);letter-spacing:-0.02em;margin-bottom:14px;" data-e>Cliente</div>
+        <div class="b-body" data-e>Datos del remitente. Historial de envíos. Preferencias de notificación.</div>
+        <div class="pat-code" style="font-size:12px;" data-e>Lazy Load proxy<br>→ carga diferida</div>
+      </div>
+      <div class="rv d3" style="border:1.5px solid var(--ink);padding:30px;">
+        <div class="pat-name">Entidad</div>
+        <div style="font-family:var(--nr);font-size:48px;font-weight:400;color:var(--charcoal);letter-spacing:-0.02em;margin-bottom:14px;" data-e>Centro Distribución</div>
+        <div class="b-body" data-e>Capacidad, stock, zona geográfica, vehículos asignados.</div>
+        <div class="pat-code" style="font-size:12px;" data-e>Repository pattern<br>→ acceso abstracto</div>
+      </div>
+      <div class="rv d4" style="border:1.5px solid var(--ink);padding:30px;">
+        <div class="pat-name">Entidad</div>
+        <div style="font-family:var(--nr);font-size:48px;font-weight:400;color:var(--charcoal);letter-spacing:-0.02em;margin-bottom:14px;" data-e>Ruta</div>
+        <div class="b-body" data-e>Secuencia de paradas. Tiempo estimado. Vehículo asignado. Estado.</div>
+        <div class="pat-code" style="font-size:12px;" data-e>Data Mapper<br>→ persistencia separada</div>
+      </div>
+    </div>
+  </div>
+  <span class="pn">12 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 13 — ATRIBUTOS DE CALIDAD
+═══════════════════════════════════════════ -->
+<section class="slide" id="s13">
+  <div class="sec-label">02 — Modelo de Dominio</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Atributos de Calidad</h2>
+      <span class="topbar-tag">Quality Attributes</span>
+    </div>
+    <div class="ledger">
+      <div class="lr rv d1">
+        <span class="lr-num">QA1</span>
+        <span class="lr-label" data-e>Disponibilidad</span>
+        <span class="lr-detail" data-e>99.99% SLA — máx. 52.6 min de downtime por año</span>
+      </div>
+      <div class="lr rv d2">
+        <span class="lr-num">QA2</span>
+        <span class="lr-label" data-e>Seguridad</span>
+        <span class="lr-detail" data-e>Zero Trust · AES-256 en reposo · TLS 1.3 en tránsito · RBAC</span>
+      </div>
+      <div class="lr rv d3">
+        <span class="lr-num">QA3</span>
+        <span class="lr-label" data-e>Mantenibilidad</span>
+        <span class="lr-detail" data-e>Patrones GoF · capas desacopladas · interfaces bien definidas</span>
+      </div>
+      <div class="lr rv d4">
+        <span class="lr-num">QA4</span>
+        <span class="lr-label" data-e>Escalabilidad</span>
+        <span class="lr-detail" data-e>Microservicios independientes · escala horizontal por servicio</span>
+      </div>
+      <div class="lr rv d5">
+        <span class="lr-num">QA5</span>
+        <span class="lr-label" data-e>Integridad</span>
+        <span class="lr-detail" data-e>Unit of Work · transacciones atómicas · sin escrituras parciales</span>
+      </div>
+    </div>
+  </div>
+  <span class="pn">13 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 14 — DECISIÓN ARQUITECTÓNICA
+═══════════════════════════════════════════ -->
+<section class="slide" id="s14">
+  <div class="sec-label">02 — Modelo de Dominio</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Microservicios</h2>
+      <span class="topbar-tag">Decisión arquitectónica</span>
+    </div>
+    <p class="b-lede rv d1" style="margin-bottom:44px;" data-e>Cuatro bounded contexts independientes. Cada uno desplegable y escalable por separado.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:24px;" class="rv d2">
+      <div style="border:1.5px solid var(--ink);padding:28px 24px;background:rgba(31,43,224,0.04);">
+        <div class="micro" style="margin-bottom:12px;font-size:11px;">Servicio 1</div>
+        <div style="font-family:var(--nr);font-size:36px;font-weight:400;color:var(--ink);" data-e>Envíos</div>
+        <div class="b-body" style="font-size:17px;margin-top:10px;" data-e>Gestión del ciclo de vida del envío</div>
+      </div>
+      <div style="border:1.5px solid var(--ink);padding:28px 24px;">
+        <div class="micro" style="margin-bottom:12px;font-size:11px;">Servicio 2</div>
+        <div style="font-family:var(--nr);font-size:36px;font-weight:400;color:var(--ink);" data-e>Rutas</div>
+        <div class="b-body" style="font-size:17px;margin-top:10px;" data-e>Optimización y seguimiento</div>
+      </div>
+      <div style="border:1.5px solid var(--ink);padding:28px 24px;">
+        <div class="micro" style="margin-bottom:12px;font-size:11px;">Servicio 3</div>
+        <div style="font-family:var(--nr);font-size:36px;font-weight:400;color:var(--ink);" data-e>Facturación</div>
+        <div class="b-body" style="font-size:17px;margin-top:10px;" data-e>Cálculo de costos y pagos</div>
+      </div>
+      <div style="border:1.5px solid var(--ink);padding:28px 24px;">
+        <div class="micro" style="margin-bottom:12px;font-size:11px;">Servicio 4</div>
+        <div style="font-family:var(--nr);font-size:36px;font-weight:400;color:var(--ink);" data-e>Notificaciones</div>
+        <div class="b-body" style="font-size:17px;margin-top:10px;" data-e>SMS, push, email por evento</div>
+      </div>
+    </div>
+  </div>
+  <span class="pn">14 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 15 — OPENER: PATRONES GOF
+═══════════════════════════════════════════ -->
+<section class="slide" id="s15">
+  <div class="cf" style="right:400px;display:flex;flex-direction:column;justify-content:center;">
+    <span class="opener-num rv d1">03</span>
+    <h2 class="opener-title rv d2" data-e>Patrones GoF</h2>
+    <p class="opener-sub rv d3" data-e>Seis patrones aplicados con justificación concreta.<br>No por el libro — por el problema.</p>
+    <div class="opener-time rv d4">6–7 min</div>
+  </div>
+  <div class="glitch-col fd d2">
+    <div class="px-grid">
+      <div class="px-row"><div class="px-cell on"></div><div class="px-cell"></div><div class="px-cell on"></div><div class="px-cell mid"></div><div class="px-cell"></div><div class="px-cell on"></div></div>
+      <div class="px-row"><div class="px-cell"></div><div class="px-cell on"></div><div class="px-cell on"></div><div class="px-cell"></div><div class="px-cell on"></div><div class="px-cell"></div></div>
+      <div class="px-row"><div class="px-cell on"></div><div class="px-cell mid"></div><div class="px-cell"></div><div class="px-cell on"></div><div class="px-cell"></div><div class="px-cell mid"></div></div>
+      <div class="px-row"><div class="px-cell"></div><div class="px-cell on"></div><div class="px-cell mid"></div><div class="px-cell on"></div><div class="px-cell on"></div><div class="px-cell"></div></div>
+    </div>
+    <div class="idx-list">
+      <div class="idx-row"><span class="idx-n">→</span>Abstract Factory</div>
+      <div class="idx-row"><span class="idx-n">→</span>Builder</div>
+      <div class="idx-row"><span class="idx-n">→</span>Chain of Responsibility</div>
+      <div class="idx-row"><span class="idx-n">→</span>State</div>
+      <div class="idx-row"><span class="idx-n">→</span>Strategy</div>
+      <div class="idx-row"><span class="idx-n">→</span>Template Method</div>
+    </div>
+  </div>
+  <span class="pn">15 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 16 — ABSTRACT FACTORY
+═══════════════════════════════════════════ -->
+<section class="slide" id="s16">
+  <div class="sec-label">03 — Patrones GoF</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Abstract Factory</h2>
+      <span class="topbar-tag">Creacional</span>
+    </div>
+    <div class="two-col" style="align-items:start;">
+      <div>
+        <p class="b-lede rv d1" data-e style="margin-bottom:28px;"><span class="b-strong">Problema:</span> Argentina y Brasil tienen impuestos, vehículos y reglas de negocio distintos.</p>
+        <p class="b-body rv d2" data-e>La lógica de negocio no puede estar llena de <code>if (país == "ARG")</code>. Abstract Factory encapsula toda la variación regional.</p>
+        <div class="rv d3" style="margin-top:32px;">
+          <div class="pat-code" data-e>
+            IFactoryRegional<br>
+            ├── FactoryArgentina → VehiculoNacional, ImpuestoIIBB<br>
+            └── FactoryBrasil → VehiculoEstadual, ImpuestoICMS
+          </div>
+        </div>
+      </div>
+      <div class="rv d3" style="border:1.5px solid var(--ink);padding:40px;">
+        <div class="pat-name">Beneficio clave</div>
+        <p class="b-lede" style="font-size:28px;line-height:1.4;" data-e>Agregar una nueva región = implementar una nueva Factory.<br><br>El controlador no cambia.</p>
+      </div>
+    </div>
+  </div>
+  <span class="pn">16 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 17 — BUILDER
+═══════════════════════════════════════════ -->
+<section class="slide" id="s17">
+  <div class="sec-label">03 — Patrones GoF</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Builder</h2>
+      <span class="topbar-tag">Creacional</span>
+    </div>
+    <div class="two-col" style="align-items:start;">
+      <div>
+        <p class="b-lede rv d1" data-e style="margin-bottom:28px;"><span class="b-strong">Problema:</span> <code>Envio</code> tiene 10+ atributos opcionales. Un constructor con 10 parámetros es ilegible e inutilizable.</p>
+        <p class="b-body rv d2" data-e>Builder separa la construcción del objeto de su representación. Permite crear envíos paso a paso con solo los campos necesarios.</p>
+      </div>
+      <div class="rv d3">
+        <div class="pat-block">
+          <div class="pat-name">EnvioBuilder — Fluent API</div>
+          <div class="pat-code" data-e style="font-size:13px;line-height:1.8;">
+            new EnvioBuilder()<br>
+            &nbsp;&nbsp;.conOrigen("Buenos Aires")<br>
+            &nbsp;&nbsp;.conDestino("Córdoba")<br>
+            &nbsp;&nbsp;.conPeso(5.2)<br>
+            &nbsp;&nbsp;.conUrgencia(true)<br>
+            &nbsp;&nbsp;.conSeguro(500.0)<br>
+            &nbsp;&nbsp;.build()
+          </div>
+        </div>
+        <p class="b-body" data-e style="margin-top:16px;">Prototype implementado en <code>Envio.clonar()</code> para duplicar envíos recurrentes.</p>
+      </div>
+    </div>
+  </div>
+  <span class="pn">17 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 18 — CHAIN OF RESPONSIBILITY
+═══════════════════════════════════════════ -->
+<section class="slide" id="s18">
+  <div class="sec-label">03 — Patrones GoF</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Chain of Responsibility</h2>
+      <span class="topbar-tag">Comportamiento</span>
+    </div>
+    <p class="b-lede rv d1" data-e style="margin-bottom:40px;"><span class="b-strong">Problema:</span> Validar un envío implica 5 reglas distintas. Si cualquiera falla, el proceso se detiene.</p>
+    <div class="state-flow rv d2" style="flex-wrap:nowrap;gap:0;margin-bottom:40px;">
+      <div class="state-box" data-e>ValidadorDatos</div>
+      <div class="state-arrow">→</div>
+      <div class="state-box" data-e>ValidadorInventario</div>
+      <div class="state-arrow">→</div>
+      <div class="state-box" data-e>ValidadorPago</div>
+      <div class="state-arrow">→</div>
+      <div class="state-box" data-e>ValidadorSeguridad</div>
+      <div class="state-arrow">→</div>
+      <div class="state-box" data-e>ValidadorCapacidad</div>
+    </div>
+    <div class="rv d3" style="padding:24px 32px;border-left:3px solid var(--ink);background:rgba(31,43,224,0.04);">
+      <span class="b-body"><span class="b-strong">CadenaValidadores</span> ensambla la cadena en runtime. Agregar una regla nueva = agregar un eslabón. El controlador no sabe cuántos hay.</span>
+    </div>
+  </div>
+  <span class="pn">18 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 19 — STATE
+═══════════════════════════════════════════ -->
+<section class="slide" id="s19">
+  <div class="sec-label">03 — Patrones GoF</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>State</h2>
+      <span class="topbar-tag">Comportamiento</span>
+    </div>
+    <p class="b-lede rv d1" data-e style="margin-bottom:36px;"><span class="b-strong">Problema:</span> Un envío tiene comportamiento distinto según su estado. Sin State, el código es un infierno de <code>switch/if</code>.</p>
+    <div class="state-flow rv d2" style="gap:8px;margin-bottom:36px;flex-wrap:wrap;">
+      <div class="state-box" style="background:rgba(31,43,224,0.08);" data-e>Confirmado</div>
+      <div class="state-arrow">→</div>
+      <div class="state-box" data-e>En Tránsito</div>
+      <div class="state-arrow">→</div>
+      <div class="state-box" data-e>En Reparto</div>
+      <div class="state-arrow">→</div>
+      <div class="state-box" style="background:rgba(31,43,224,0.08);" data-e>Entregado</div>
+    </div>
+    <div class="state-flow rv d3" style="gap:8px;">
+      <div style="width:200px;"></div>
+      <div class="state-arrow" style="opacity:0.3;">↘</div>
+      <div class="state-box" style="border-color:var(--ink-soft);" data-e>Retenido</div>
+      <div class="state-arrow">→</div>
+      <div class="state-box" style="border-color:var(--ink-soft);" data-e>Cancelado</div>
+    </div>
+    <div class="rv d4" style="margin-top:32px;padding:20px 28px;border-left:3px solid var(--ink);background:rgba(31,43,224,0.04);">
+      <span class="b-body">Cada estado implementa <span class="b-strong">EstadoEnvio</span> — las transiciones inválidas lanzan excepción por diseño.</span>
+    </div>
+  </div>
+  <span class="pn">19 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 20 — STRATEGY
+═══════════════════════════════════════════ -->
+<section class="slide" id="s20">
+  <div class="sec-label">03 — Patrones GoF</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Strategy</h2>
+      <span class="topbar-tag">Comportamiento</span>
+    </div>
+    <p class="b-lede rv d1" data-e style="margin-bottom:40px;"><span class="b-strong">Problema:</span> El costo de un envío se calcula de 5 maneras distintas. El algoritmo cambia según el contrato del cliente.</p>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:20px;" class="rv d2">
+      <div style="border:1.5px solid var(--ink);padding:24px 18px;text-align:center;">
+        <div class="micro" style="font-size:10px;margin-bottom:12px;">Estrategia 1</div>
+        <div style="font-family:var(--nr);font-size:32px;font-weight:400;color:var(--ink);" data-e>Distancia</div>
+        <div class="b-body" style="font-size:15px;margin-top:8px;" data-e>$/km lineal</div>
+      </div>
+      <div style="border:1.5px solid var(--ink);padding:24px 18px;text-align:center;">
+        <div class="micro" style="font-size:10px;margin-bottom:12px;">Estrategia 2</div>
+        <div style="font-family:var(--nr);font-size:32px;font-weight:400;color:var(--ink);" data-e>Peso</div>
+        <div class="b-body" style="font-size:15px;margin-top:8px;" data-e>$/kg de carga</div>
+      </div>
+      <div style="border:1.5px solid var(--ink);padding:24px 18px;text-align:center;">
+        <div class="micro" style="font-size:10px;margin-bottom:12px;">Estrategia 3</div>
+        <div style="font-family:var(--nr);font-size:32px;font-weight:400;color:var(--ink);" data-e>Urgencia</div>
+        <div class="b-body" style="font-size:15px;margin-top:8px;" data-e>tarifa express</div>
+      </div>
+      <div style="border:1.5px solid var(--ink);padding:24px 18px;text-align:center;">
+        <div class="micro" style="font-size:10px;margin-bottom:12px;">Estrategia 4</div>
+        <div style="font-family:var(--nr);font-size:32px;font-weight:400;color:var(--ink);" data-e>Volumen</div>
+        <div class="b-body" style="font-size:15px;margin-top:8px;" data-e>m³ ocupado</div>
+      </div>
+      <div style="border:2px solid var(--ink);padding:24px 18px;text-align:center;background:rgba(31,43,224,0.06);">
+        <div class="micro" style="font-size:10px;margin-bottom:12px;">Estrategia 5</div>
+        <div style="font-family:var(--nr);font-size:32px;font-weight:400;color:var(--ink);" data-e>Híbrida</div>
+        <div class="b-body" style="font-size:15px;margin-top:8px;" data-e>composición ponderada</div>
+      </div>
+    </div>
+    <div class="rv d3" style="margin-top:32px;padding:20px 28px;border-left:3px solid var(--ink);background:rgba(31,43,224,0.04);">
+      <span class="b-body">La estrategia se inyecta en runtime. Cambiar el algoritmo = cambiar la referencia. El servicio de facturación no se modifica.</span>
+    </div>
+  </div>
+  <span class="pn">20 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 21 — TEMPLATE METHOD
+═══════════════════════════════════════════ -->
+<section class="slide" id="s21">
+  <div class="sec-label">03 — Patrones GoF</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Template Method</h2>
+      <span class="topbar-tag">Comportamiento</span>
+    </div>
+    <div class="two-col" style="align-items:start;">
+      <div>
+        <p class="b-lede rv d1" data-e style="margin-bottom:28px;"><span class="b-strong">Problema:</span> El proceso de un envío siempre sigue el mismo esqueleto. Solo algunos pasos cambian.</p>
+        <div class="rv d2">
+          <div class="pat-code" data-e style="font-size:13px;line-height:2;">
+            ProcesadorEnvio.procesar():<br>
+            &nbsp;&nbsp;1. validar()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← abstract<br>
+            &nbsp;&nbsp;2. calcularCosto() ← abstract<br>
+            &nbsp;&nbsp;3. procesarPago() ← concreto<br>
+            &nbsp;&nbsp;4. notificar()&nbsp;&nbsp;&nbsp;← abstract
+          </div>
+        </div>
+        <p class="b-body rv d3" data-e style="margin-top:24px;">Cada tipo de envío (nacional, internacional, express) hereda y redefine solo lo que cambia.</p>
+      </div>
+      <div class="rv d3">
+        <div style="border:1.5px solid var(--ink);padding:36px;">
+          <div class="pat-name">Decorator — Extensión sin herencia</div>
+          <p class="b-body" data-e style="margin-bottom:16px;">Agrega comportamiento a un envío sin modificar su clase: seguimiento GPS premium, notificación SMS, seguro adicional.</p>
+          <div class="pat-code" data-e style="font-size:13px;line-height:1.8;">
+            EnvioDecorator<br>
+            ├── SeguimientoGPS<br>
+            └── NotificacionPremium
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="pn">21 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 22 — OPENER: CAPA DE PERSISTENCIA
+═══════════════════════════════════════════ -->
+<section class="slide" id="s22">
+  <div class="cf" style="right:400px;display:flex;flex-direction:column;justify-content:center;">
+    <span class="opener-num rv d1">04</span>
+    <h2 class="opener-title rv d2" data-e>Capa de Persistencia</h2>
+    <p class="opener-sub rv d3" data-e>Cuatro patrones que trabajan como sistema.<br>El dominio nunca sabe que existe una base de datos.</p>
+    <div class="opener-time rv d4">4–5 min</div>
+  </div>
+  <div class="glitch-col fd d2">
+    <div class="scan-stack">
+      <div class="scan"></div><div class="scan"></div><div class="scan"></div>
+      <div class="scan"></div><div class="scan"></div><div class="scan"></div>
+      <div class="scan"></div><div class="scan"></div>
+    </div>
+  </div>
+  <span class="pn">22 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 23 — DATA MAPPER + REPOSITORY
+═══════════════════════════════════════════ -->
+<section class="slide" id="s23">
+  <div class="sec-label">04 — Capa de Persistencia</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Data Mapper + Repository</h2>
+      <span class="topbar-tag">Separación de preocupaciones</span>
+    </div>
+    <div class="two-col" style="align-items:start;">
+      <div>
+        <div class="pat-block rv d1">
+          <div class="pat-name">Data Mapper</div>
+          <div class="pat-h" style="font-size:44px;" data-e>Dominio puro</div>
+          <p class="pat-body" data-e>Las clases <code>Envio</code>, <code>Cliente</code> no tienen SQL. <code>EnvioMapper</code> y <code>ClienteMapper</code> trasladan datos entre objetos y tablas.</p>
+        </div>
+        <div class="b-body rv d2" data-e>Cambiar la base de datos no toca ni una línea del modelo de negocio.</div>
+      </div>
+      <div>
+        <div class="pat-block rv d2">
+          <div class="pat-name">Repository</div>
+          <div class="pat-h" style="font-size:44px;" data-e>Interfaz uniforme</div>
+          <p class="pat-body" data-e>La lógica de negocio llama a <code>RepositorioEnvios.buscar(id)</code>. No sabe si es SQL o memoria.</p>
+          <div class="pat-code" data-e style="font-size:12px;line-height:1.8;">
+            RepositorioEnvios (interfaz)<br>
+            ├── RepositorioEnviosSQL (producción)<br>
+            └── RepositorioEnviosMemoria (tests)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="pn">23 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 24 — UNIT OF WORK
+═══════════════════════════════════════════ -->
+<section class="slide" id="s24">
+  <div class="sec-label">04 — Capa de Persistencia</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Unit of Work</h2>
+      <span class="topbar-tag">Consistencia transaccional</span>
+    </div>
+    <div class="two-col" style="align-items:start;">
+      <div>
+        <p class="b-lede rv d1" data-e style="margin-bottom:28px;"><span class="b-strong">Problema:</span> Crear un envío requiere 3 escrituras. Si falla la tercera, la base queda inconsistente.</p>
+        <div class="rv d2">
+          <div class="pat-code" data-e style="font-size:13px;line-height:2;">
+            unitOfWork.registrarNuevo(envio)<br>
+            unitOfWork.registrarNuevo(pago)<br>
+            unitOfWork.registrarModificado(centro)<br>
+            unitOfWork.commit()&nbsp;&nbsp;← todo o nada
+          </div>
+        </div>
+      </div>
+      <div class="rv d3" style="border:1.5px solid var(--ink);padding:40px;">
+        <div class="micro" style="margin-bottom:20px;">Dirty tracking</div>
+        <div class="ledger" style="border-top:none;">
+          <div class="lr" style="padding:16px 0;">
+            <span class="lr-num" style="font-size:11px;">NEW</span>
+            <span class="lr-label" style="font-size:20px;" data-e>Entidades nuevas</span>
+          </div>
+          <div class="lr" style="padding:16px 0;">
+            <span class="lr-num" style="font-size:11px;">DIRTY</span>
+            <span class="lr-label" style="font-size:20px;" data-e>Entidades modificadas</span>
+          </div>
+          <div class="lr" style="padding:16px 0;">
+            <span class="lr-num" style="font-size:11px;">DEL</span>
+            <span class="lr-label" style="font-size:20px;" data-e>Entidades eliminadas</span>
+          </div>
+        </div>
+        <p class="b-body" style="margin-top:20px;" data-e>Un solo <code>commit()</code> sincroniza todo en la misma transacción.</p>
+      </div>
+    </div>
+  </div>
+  <span class="pn">24 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 25 — LAZY LOAD + SÍNTESIS
+═══════════════════════════════════════════ -->
+<section class="slide" id="s25">
+  <div class="sec-label">04 — Capa de Persistencia</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Lazy Load</h2>
+      <span class="topbar-tag">Rendimiento</span>
+    </div>
+    <div class="two-col" style="align-items:start;">
+      <div>
+        <p class="b-lede rv d1" data-e style="margin-bottom:24px;"><span class="b-strong">Problema:</span> Cargar un envío instancia toda la jerarquía del cliente. Demasiado si solo necesitamos el nombre.</p>
+        <div class="rv d2">
+          <div class="pat-code" data-e style="font-size:13px;line-height:1.8;">
+            ClienteLazyProxy {<br>
+            &nbsp;&nbsp;cargado = false<br>
+            &nbsp;&nbsp;getNombre() {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;if (!cargado) cargarDesdeDB()<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;return nombre<br>
+            &nbsp;&nbsp;}<br>
+            }
+          </div>
+        </div>
+        <p class="b-body rv d3" data-e style="margin-top:20px;">El proxy es transparente. El cliente de dominio no sabe que existe.</p>
+      </div>
+      <div class="rv d3" style="border:1.5px solid var(--ink);padding:40px;background:rgba(31,43,224,0.04);">
+        <div class="micro" style="margin-bottom:20px;">Los 4 patrones como sistema</div>
+        <div class="ledger" style="border-top:none;">
+          <div class="lr" style="padding:14px 0;">
+            <span class="lr-num">→</span>
+            <span class="lr-label" style="font-size:18px;" data-e>Data Mapper separa dominio y SQL</span>
+          </div>
+          <div class="lr" style="padding:14px 0;">
+            <span class="lr-num">→</span>
+            <span class="lr-label" style="font-size:18px;" data-e>Repository abstrae el almacenamiento</span>
+          </div>
+          <div class="lr" style="padding:14px 0;">
+            <span class="lr-num">→</span>
+            <span class="lr-label" style="font-size:18px;" data-e>Unit of Work garantiza atomicidad</span>
+          </div>
+          <div class="lr" style="padding:14px 0;">
+            <span class="lr-num">→</span>
+            <span class="lr-label" style="font-size:18px;" data-e>Lazy Load optimiza la memoria</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="pn">25 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 26 — OPENER: CIERRE
+═══════════════════════════════════════════ -->
+<section class="slide" id="s26">
+  <div class="cf" style="right:400px;display:flex;flex-direction:column;justify-content:center;">
+    <span class="opener-num rv d1">05</span>
+    <h2 class="opener-title rv d2" data-e>Cierre</h2>
+    <p class="opener-sub rv d3" data-e>Lo que construimos, lo que aprendimos<br>y lo que elegimos dejar para después.</p>
+    <div class="opener-time rv d4">2 min</div>
+  </div>
+  <div class="glitch-col fd d2">
+    <div class="scan-stack">
+      <div class="scan"></div><div class="scan"></div><div class="scan"></div>
+      <div class="scan"></div><div class="scan"></div><div class="scan"></div>
+      <div class="scan"></div><div class="scan"></div>
+    </div>
+  </div>
+  <span class="pn">26 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 27 — LO QUE DEMOSTRAMOS
+═══════════════════════════════════════════ -->
+<section class="slide" id="s27">
+  <div class="sec-label">05 — Cierre</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Lo que demostramos</h2>
+      <span class="topbar-tag">Síntesis</span>
+    </div>
+    <div class="ledger">
+      <div class="lr rv d1">
+        <span class="lr-num">✓</span>
+        <span class="lr-label" data-e>Dominio rico y tipado</span>
+        <span class="lr-detail" data-e>Actores, CU, entidades y atributos de calidad definidos con precisión</span>
+      </div>
+      <div class="lr rv d2">
+        <span class="lr-num">✓</span>
+        <span class="lr-label" data-e>Patrones GoF justificados</span>
+        <span class="lr-detail" data-e>6 patrones aplicados con problema concreto, no por moda</span>
+      </div>
+      <div class="lr rv d3">
+        <span class="lr-num">✓</span>
+        <span class="lr-label" data-e>Persistencia desacoplada</span>
+        <span class="lr-detail" data-e>4 patrones que aislan el dominio de la infraestructura de datos</span>
+      </div>
+      <div class="lr rv d4">
+        <span class="lr-num">✓</span>
+        <span class="lr-label" data-e>Arquitectura extensible</span>
+        <span class="lr-detail" data-e>Nuevas regiones, estrategias de costo y validaciones sin modificar el núcleo</span>
+      </div>
+    </div>
+  </div>
+  <span class="pn">27 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 28 — DEUDA TÉCNICA
+═══════════════════════════════════════════ -->
+<section class="slide" id="s28">
+  <div class="sec-label">05 — Cierre</div>
+  <div class="cf" style="top:100px;">
+    <div class="topbar">
+      <h2 class="topbar-h" data-e>Deuda técnica consciente</h2>
+      <span class="topbar-tag">Lo que queda</span>
+    </div>
+    <p class="b-lede rv d1" data-e style="margin-bottom:44px;">No omitimos estas decisiones por error. Las postergamos con criterio.</p>
+    <div class="three-col">
+      <div class="rv d2" style="border-top:3px solid var(--ink-soft);padding-top:28px;">
+        <div class="micro" style="margin-bottom:16px;color:var(--ink-soft);">Deuda 1</div>
+        <div class="b-lede" style="font-size:26px;margin-bottom:12px;" data-e>Testing automatizado</div>
+        <div class="b-body" data-e>Suite de tests unitarios e integración. Los repositories en memoria ya están listos para eso.</div>
+      </div>
+      <div class="rv d3" style="border-top:3px solid var(--ink-soft);padding-top:28px;">
+        <div class="micro" style="margin-bottom:16px;color:var(--ink-soft);">Deuda 2</div>
+        <div class="b-lede" style="font-size:26px;margin-bottom:12px;" data-e>Pipeline CI/CD</div>
+        <div class="b-body" data-e>Despliegue continuo con rollback automático. La arquitectura de microservicios lo facilita.</div>
+      </div>
+      <div class="rv d4" style="border-top:3px solid var(--ink-soft);padding-top:28px;">
+        <div class="micro" style="margin-bottom:16px;color:var(--ink-soft);">Deuda 3</div>
+        <div class="b-lede" style="font-size:26px;margin-bottom:12px;" data-e>Interfaz de usuario</div>
+        <div class="b-body" data-e>El diseño UX/UI del dashboard queda fuera del scope de este TPO de arquitectura.</div>
+      </div>
+    </div>
+  </div>
+  <span class="pn">28 / 29</span>
+</section>
+
+<!-- ═══════════════════════════════════════════
+  SLIDE 29 — COLOFÓN
+═══════════════════════════════════════════ -->
+<section class="slide" id="s29">
+  <div class="cf" style="right:400px;display:flex;flex-direction:column;justify-content:center;">
+    <div class="micro rv d1" data-e style="margin-bottom:28px;">Grupo Última Fila · UADE · Junio 2025</div>
+    <h2 class="rv d2" style="font-family:var(--nr);font-size:120px;font-weight:400;color:var(--charcoal);letter-spacing:-0.03em;line-height:0.9;margin-bottom:36px;" data-e>Gracias.</h2>
+    <div style="height:1.5px;background:var(--ink);width:400px;margin-bottom:36px;" class="rv d3"></div>
+    <p class="b-lede rv d4" data-e style="max-width:700px;">¿Preguntas?</p>
+    <div class="rv d5" style="margin-top:48px;display:flex;gap:48px;">
+      <div>
+        <div class="micro" style="margin-bottom:8px;">Equipo</div>
+        <div class="b-body" data-e>Churba · Díaz Valdez · Noblia</div>
+      </div>
+      <div>
+        <div class="micro" style="margin-bottom:8px;">Docente</div>
+        <div class="b-body" data-e>Salas, Joaquín</div>
+      </div>
+    </div>
+  </div>
+  <div class="glitch-col fd d2">
+    <div class="px-grid">
+      <div class="px-row"><div class="px-cell on"></div><div class="px-cell mid"></div><div class="px-cell on"></div><div class="px-cell"></div><div class="px-cell on"></div><div class="px-cell on"></div></div>
+      <div class="px-row"><div class="px-cell"></div><div class="px-cell on"></div><div class="px-cell"></div><div class="px-cell on"></div><div class="px-cell mid"></div><div class="px-cell on"></div></div>
+      <div class="px-row"><div class="px-cell on"></div><div class="px-cell"></div><div class="px-cell on"></div><div class="px-cell on"></div><div class="px-cell"></div><div class="px-cell mid"></div></div>
+      <div class="px-row"><div class="px-cell mid"></div><div class="px-cell on"></div><div class="px-cell mid"></div><div class="px-cell"></div><div class="px-cell on"></div><div class="px-cell on"></div></div>
+    </div>
+    <div style="margin-top:32px;">
+      <div class="micro" style="margin-bottom:16px;">Repositorio del proyecto</div>
+      <div style="font-family:var(--dm);font-size:12px;color:var(--text-2);line-height:1.9;" data-e>
+        Proceso de Desarrollo de Software<br>
+        FICE · UADE · 2025
+      </div>
+    </div>
+  </div>
+  <span class="pn">29 / 29</span>
+</section>
+
+</main>
+</div>
+
+<script>
+/* === VIEWPORT SCALING === */
+const stage = document.getElementById('deckStage');
+function scaleStage() {
+  const f = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  const x = (window.innerWidth - 1920 * f) / 2;
+  const y = (window.innerHeight - 1080 * f) / 2;
+  stage.style.transform = `translate(${x}px,${y}px) scale(${f})`;
+}
+scaleStage();
+window.addEventListener('resize', scaleStage);
+
+/* === SLIDE NAVIGATION === */
+const slides = Array.from(document.querySelectorAll('.slide'));
+const total = slides.length;
+let cur = 0;
+
+function activate(n) {
+  n = Math.max(0, Math.min(n, total - 1));
+  slides[cur].classList.remove('active', 'visible');
+  cur = n;
+  slides[cur].classList.add('active');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => slides[cur].classList.add('visible'));
+  });
+}
+
+/* Init first slide */
+slides[0].classList.add('active');
+requestAnimationFrame(() => requestAnimationFrame(() => slides[0].classList.add('visible')));
+
+document.addEventListener('keydown', e => {
+  if (editMode && e.key !== 'Escape' && !(e.ctrlKey && e.key === 's')) return;
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') { e.preventDefault(); activate(cur + 1); }
+  if (e.key === 'ArrowLeft' || e.key === 'Backspace' || e.key === 'ArrowUp') { e.preventDefault(); activate(cur - 1); }
+  if (e.key === 'Home') { e.preventDefault(); activate(0); }
+  if (e.key === 'End') { e.preventDefault(); activate(total - 1); }
+  if (/^\d$/.test(e.key)) { activate(parseInt(e.key, 10) - 1); }
+});
+
+/* Touch/swipe */
+let touchX = 0;
+document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) activate(dx < 0 ? cur + 1 : cur - 1);
+}, { passive: true });
+
+/* === INLINE EDITING === */
+let editMode = false;
+
+function enterEdit() {
+  editMode = true;
+  document.body.classList.add('edit-mode');
+  document.querySelectorAll('.slide.active [data-e]').forEach(el => { el.contentEditable = 'true'; });
+}
+function exitEdit() {
+  editMode = false;
+  document.body.classList.remove('edit-mode');
+  document.querySelectorAll('[data-e]').forEach(el => { el.contentEditable = 'false'; });
+}
+
+/* Hotzone: hover top-left 80x80px of viewport */
+document.addEventListener('mousemove', e => {
+  if (!editMode && e.clientX < 80 && e.clientY < 80) document.body.style.cursor = 'pointer';
+  else if (!editMode) document.body.style.cursor = '';
+});
+document.addEventListener('click', e => {
+  if (!editMode && e.clientX < 80 && e.clientY < 80) enterEdit();
+});
+
+document.addEventListener('keydown', e => {
+  if ((e.key === 'e' || e.key === 'E') && !editMode &&
+      !['INPUT','TEXTAREA'].includes(document.activeElement.tagName) &&
+      !document.activeElement.isContentEditable) {
+    enterEdit();
+  }
+  if (e.key === 'Escape' && editMode) exitEdit();
+  if (e.ctrlKey && e.key === 's' && editMode) {
+    e.preventDefault();
+    const blob = new Blob([document.documentElement.outerHTML], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'logismart-defensa.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+});
+</script>
+</body>
+</html>
